@@ -24,35 +24,10 @@ class School(models.Model):
             )
 
     class Meta(object):
-        db_table = u'entrance_school'
+        db_table = u'nma_reg_common_school'
         ordering = [u'title']
         verbose_name = u'Mokykla'
         verbose_name_plural = u'Mokyklos'
-
-    def __unicode__(self):
-        return self.title
-
-
-class SessionProgram(models.Model):
-    """ Program for student to select from.
-    """
-
-    title = models.CharField(
-            max_length=80,
-            verbose_name=u'Pavadinimas',
-            unique=True,
-            )
-
-    description = models.TextField(
-            blank=True,
-            null=True,
-            verbose_name=u'Aprašymas')
-
-    class Meta(object):
-        db_table = u'session_reg_sessionprogram'
-        ordering = [u'title']
-        verbose_name = u'Sesijos programa'
-        verbose_name_plural = u'Sesijos programos'
 
     def __unicode__(self):
         return self.title
@@ -105,6 +80,10 @@ class BaseInfo(models.Model):
             verbose_name=u'Pastabos',
             )
 
+    payment = models.IntegerField(
+            verbose_name=u'Dalyvio mokestis',
+            )
+
     class Meta(object):
         db_table = u'session_reg_baseinfo'
         ordering = [u'last_name', u'first_name',]
@@ -126,14 +105,14 @@ class Invitation(models.Model):
             verbose_name=u'Bazinė informacija',
             )
 
-    payment = models.IntegerField(
-            verbose_name=u'Dalyvio mokestis',
-            )
-
     uuid = models.CharField(
             max_length=36,
             unique=True,
             verbose_name=u'Kvietimo identifikatorius',
+            )
+
+    payment = models.IntegerField(
+            verbose_name=u'Dalyvio mokestis',
             )
 
     create_timestamp = models.DateTimeField(
@@ -227,26 +206,12 @@ class StudentInfo(models.Model):
                 ),
             )
 
-    session_programs_ratings = models.ManyToManyField(
-            SessionProgram,
-            through='SessionProgramRating',
-            verbose_name=u'Sesijos programų įvertinimai',
-            )
-
     create_timestamp = models.DateTimeField(
             verbose_name=u'Užpildymo laikas',
             auto_now_add=True,
             )
 
     # Information entered by administrator:
-
-    selected_session_program = models.ForeignKey(
-            SessionProgram,
-            related_name='students',
-            blank=True,
-            null=True,
-            verbose_name=u'Paskirta programa',
-            )
 
     payed = models.BooleanField(
             verbose_name=u'Susimokėjo',
@@ -274,39 +239,6 @@ class StudentInfo(models.Model):
 
     def __unicode__(self):
         return u'<{0.id}> kvietimas: {0.invitation}'.format(self)
-
-
-class SessionProgramRating(models.Model):
-    """ Student rating for session program.
-    """
-
-    student = models.ForeignKey(
-            StudentInfo,
-            verbose_name=u'Mokinys',
-            )
-
-    program = models.ForeignKey(
-            SessionProgram,
-            verbose_name=u'Programa',
-            )
-
-    rating = models.PositiveSmallIntegerField(
-            verbose_name=u'Įvertinimas',
-            help_text=u'6 – labiausiai patikusi, 1 – mažiausiai',
-            choices=zip(range(1, 7), range(1, 7)),
-            )
-
-    comment = models.TextField(
-            blank=True,
-            null=True,
-            verbose_name=u'Pasirinkimo pagrindimas',
-            )
-
-    class Meta(object):
-        db_table = u'session_reg_sessionprogramrating'
-        ordering = [u'student', u'program',]
-        verbose_name = u'Sesijos programos įvertinimas'
-        verbose_name_plural = u'Sesijos programų įvertinimai'
 
 
 class ParentInfo(models.Model):

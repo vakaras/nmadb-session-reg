@@ -27,14 +27,29 @@ class BaseInfoAdmin(admin.ModelAdmin):
             'section',
             )
 
+    search_fields = (
+            'first_name',
+            'last_name',
+            'email',
+            'section',
+            )
+
 
 class StudentInfoAdmin(admin.ModelAdmin):
     """ Administration for StudentInfo.
     """
 
+    list_display = (
+            'first_name',
+            'last_name',
+            'email',
+            )
+
     actions = [
             'migrate',
             ]
+
+    select_related = True
 
     @transaction.commit_on_success
     def migrate(self, request, queryset):
@@ -42,21 +57,11 @@ class StudentInfoAdmin(admin.ModelAdmin):
         """
 
         session = sessions.Session.objects.get(
-                year=2011,
-                session_type=u'Au',
+                year=2012,
+                session_type=u'Wi',
                 )
         last_time_used = session.begin - datetime.timedelta(days=10)
         phone_validator = PhoneNumberValidator(u'370')
-
-        groups = {}
-        for program in models.SessionProgram.objects.exclude(
-                title=u'Nebedalyvaus'):
-            group = sessions.Group()
-            group.session = session
-            group.comment = program.title
-            group.save()
-            groups[program.id] = group
-        del group
 
         for student_info in queryset:
 
@@ -69,7 +74,7 @@ class StudentInfoAdmin(admin.ModelAdmin):
 
             try:
                 student = students.Student.objects.get(
-                        id=base_info.db_id,
+                        email__address__iexact=base_info.email,
                         first_name=base_info.first_name,
                         last_name=base_info.last_name,
                         )
@@ -79,18 +84,10 @@ class StudentInfoAdmin(admin.ModelAdmin):
                         _(u'Ignored: {0.first_name} {0.last_name}').format(
                             base_info))
             else:
+                if base_info.section == u'Filologija':
+                    base_info.section = u'Lietuvi\u0173 filologija'
                 section = academics.Section.objects.get(
-                        abbreviation={
-                            u'Bio': u'BCH',
-                            u'Che': u'CHE',
-                            u'Eko': u'EKO',
-                            u'Fil': u'FIL',
-                            u'Fiz': u'FIA',
-                            u'Inf': u'INF',
-                            u'Ist': u'IST',
-                            u'Mat': u'MAT',
-                            u'Muz': u'MUZ',
-                            }[base_info.section])
+                        title__iexact=base_info.section)
                 print student_info
                 academic = student.academic_set.get(section=section)
                 participation = sessions.AcademicParticipation()
@@ -98,8 +95,6 @@ class StudentInfoAdmin(admin.ModelAdmin):
                 participation.session = session
                 participation.payment = payment
                 participation.save()
-                groups[student_info.selected_session_program_id
-                        ].academics.add(participation)
 
                 try:
                     student.phone_set.get(number=student_info.phone_number)
@@ -139,6 +134,7 @@ class StudentInfoAdmin(admin.ModelAdmin):
 
                 parents_exists = student.parents.exists()
                 for parent_info in student_info.parents.all():
+                    print parent_info
                     if parents_exists:
                         parent = student.parents.get(
                                 first_name=parent_info.first_name,
@@ -220,10 +216,17 @@ class ParentInfoAdmin(admin.ModelAdmin):
             'job',
             )
 
+    search_fields = (
+            'child__first_name',
+            'child__last_name',
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            )
 
-admin.site.register(models.SessionProgram)
+
 admin.site.register(models.BaseInfo, BaseInfoAdmin)
 admin.site.register(models.StudentInfo, StudentInfoAdmin)
-admin.site.register(models.SessionProgramRating)
 admin.site.register(models.Invitation)
 admin.site.register(models.ParentInfo, ParentInfoAdmin)
