@@ -40,13 +40,27 @@ class StudentInfoAdmin(admin.ModelAdmin):
     """
 
     list_display = (
+            'id',
             'first_name',
             'last_name',
             'email',
+            'phone_number',
+            'school_class',
+            'school',
+            'create_timestamp',
+            'payed',
+            'chosen',
             )
 
     actions = [
             'migrate',
+            ]
+
+    search_fields = [
+            'invitation__base__id',
+            'first_name',
+            'last_name',
+            'email',
             ]
 
     select_related = True
@@ -58,7 +72,7 @@ class StudentInfoAdmin(admin.ModelAdmin):
 
         session = sessions.Session.objects.get(
                 year=2012,
-                session_type=u'Wi',
+                session_type=u'Su',
                 )
         last_time_used = session.begin - datetime.timedelta(days=10)
         phone_validator = PhoneNumberValidator(u'370')
@@ -73,7 +87,7 @@ class StudentInfoAdmin(admin.ModelAdmin):
             payment = invitation.payment
 
             try:
-                student = students.Student.objects.get(
+                student = students.Student.objects.distinct().get(
                         email__address__iexact=base_info.email,
                         first_name=base_info.first_name,
                         last_name=base_info.last_name,
@@ -84,8 +98,11 @@ class StudentInfoAdmin(admin.ModelAdmin):
                         _(u'Ignored: {0.first_name} {0.last_name}').format(
                             base_info))
             else:
-                if base_info.section == u'Filologija':
+                if base_info.section in (u'Filologija', u'filologija'):
                     base_info.section = u'Lietuvi\u0173 filologija'
+                elif base_info.section in (u'fizika',):
+                    base_info.section = u'Fizika ir Astronomija'
+                #print base_info.section
                 section = academics.Section.objects.get(
                         title__iexact=base_info.section)
                 print student_info
