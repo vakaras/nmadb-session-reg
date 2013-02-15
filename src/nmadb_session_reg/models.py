@@ -1,33 +1,31 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from django.core import validators
-from django.core.exceptions import ValidationError
-from db_utils.validators.name import (
-        NamesValidator, SurnameValidator, ALPHABET_LT)
-from db_utils.validators.phone_number import PhoneNumberValidator
+
+from nmadb_registration import models as registration_models
+from django_db_utils import models as utils_models
 
 
-from nmadb_session_reg.config import INFO
-
-
-class School(models.Model):
-    """
+class SessionProgram(models.Model):
+    """ Program for student to select from.
     """
 
     title = models.CharField(
             max_length=80,
-            blank=False,
-            verbose_name=u'Pavadinimas',
+            verbose_name=_(u'title'),
             unique=True,
             )
 
+    description = models.TextField(
+            blank=True,
+            null=True,
+            verbose_name=_(u'description'),
+            )
+
     class Meta(object):
-        db_table = u'nma_reg_common_school'
         ordering = [u'title']
-        verbose_name = u'Mokykla'
-        verbose_name_plural = u'Mokyklos'
+        verbose_name = _(u'session program')
+        verbose_name_plural = _(u'session programs')
 
     def __unicode__(self):
         return self.title
@@ -37,299 +35,306 @@ class BaseInfo(models.Model):
     """ Base information about student.
     """
 
-    first_name = models.CharField(
-            max_length=45,
-            verbose_name=u'Vardas',
-            validators=[
-                NamesValidator(
-                    ALPHABET_LT,
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    ),],
+    first_name = utils_models.FirstNameField(
+            verbose_name=_(u'first name'),
             )
 
-    last_name = models.CharField(
-            max_length=45,
-            verbose_name=u'Pavardė',
-            validators=[
-                SurnameValidator(
-                    ALPHABET_LT,
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    ),],
+    last_name = utils_models.LastNameField(
+            verbose_name=_(u'last name'),
             )
 
     email = models.EmailField(
             max_length=128,
-            verbose_name=u'Elektroninio pašto adresas',
+            verbose_name=_(u'email address'),
             )
 
-    db_id = models.IntegerField(        # ZmogusId iš NMADB.
+    human_id = models.IntegerField(        # Human.id from NMADB.
             blank=True,
             null=True,
             )
 
-    section = models.CharField(
-            max_length=20,
-            verbose_name=u'Sekcija',
+    section = models.ForeignKey(
+            registration_models.Section,
+            verbose_name=_(u'section'),
             )
 
     comment = models.TextField(
+            verbose_name=_(u'comment'),
             blank=True,
             null=True,
-            verbose_name=u'Pastabos',
             )
 
     payment = models.IntegerField(
-            verbose_name=u'Dalyvio mokestis',
+            verbose_name=_(u'participant\'s payment'),
+            )
+
+    generated_address = models.CharField(
+            max_length = 255,
+            blank=True,
+            null=True,
+            )
+
+    commit_timestamp = models.DateTimeField(
+            verbose_name=_(u'commit timestamp'),
+            auto_now_add=True,
             )
 
     class Meta(object):
-        db_table = u'session_reg_baseinfo'
-        ordering = [u'last_name', u'first_name',]
-        verbose_name = u'Bazinė informacija'
-        verbose_name_plural = u'Bazinės informacijos'
+        ordering = [u'last_name', u'first_name']
+        verbose_name = _(u'base info')
+        verbose_name_plural = _(u'base infos')
 
     def __unicode__(self):
         return u'<{0.id}> {0.first_name} {0.last_name}'.format(self)
 
 
 class Invitation(models.Model):
-    """ Invitation to session. Actually this table is created, when
-    invitation email is sent to pupil.
+    """ Invitation to session. This table is created, when invitation
+    email is sent to pupil.
     """
 
     base = models.ForeignKey(
             BaseInfo,
-            related_name='invitations',
-            verbose_name=u'Bazinė informacija',
+            verbose_name=_(u'base info'),
             )
 
-    uuid = models.CharField(
-            max_length=36,
-            unique=True,
-            verbose_name=u'Kvietimo identifikatorius',
-            )
+    uuid = utils_models.UUIDField(
+            verbose_name=_(u'invitation identifier'))
 
     payment = models.IntegerField(
-            verbose_name=u'Dalyvio mokestis',
+            verbose_name=_(u'participant\'s payment'),
             )
 
-    create_timestamp = models.DateTimeField(
-            verbose_name=u'Kvietimo sukūrimo data',
-            auto_now_add=True)
+    commit_timestamp = models.DateTimeField(
+            verbose_name=_(u'commit timestamp'),
+            auto_now_add=True,
+            )
 
     class Meta(object):
-        db_table = u'session_reg_invitation'
         ordering = [u'base',]
-        verbose_name = u'Kvietimas'
-        verbose_name_plural = u'Kvietimai'
+        verbose_name = _(u'invitation')
+        verbose_name_plural = _(u'invitations')
 
     def __unicode__(self):
-        return u'<{0.id}> bazinė anketa: {0.base}'.format(self)
+        return u'<{0.id}> base info: {0.base}'.format(self)
 
 
 class StudentInfo(models.Model):
-    """ All information, which was entered by student.
+    """ All information that was entered by student.
     """
 
     invitation = models.OneToOneField(
             Invitation,
             related_name='student_info',
-            verbose_name=u'Kvietimas',
+            verbose_name=_(u'invitation'),
             )
 
-    first_name = models.CharField(
-            max_length=45,
-            verbose_name=u'Vardas',
-            validators=[
-                NamesValidator(
-                    ALPHABET_LT,
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    ),],
+    first_name = utils_models.FirstNameField(
+            verbose_name=_(u'first name'),
             )
 
-    last_name = models.CharField(
-            max_length=45,
-            verbose_name=u'Pavardė',
-            validators=[
-                SurnameValidator(
-                    ALPHABET_LT,
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    ),],
+    last_name = utils_models.LastNameField(
+            verbose_name=_(u'last name'),
             )
 
     email = models.EmailField(
             max_length=128,
-            verbose_name=u'Dabartinio elektroninio pašto adresas',
+            verbose_name=_(u'email address'),
             )
 
-    phone_number = models.CharField(
-            max_length=16,
-            verbose_name=u'Asmeninis telefono numeris',
-            validators=[
-                PhoneNumberValidator(
-                    u'370',
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    )
-                ],
+    phone_number = utils_models.PhoneNumberField(
+            verbose_name=_(u'personal phone number'),
             )
 
     school_class = models.PositiveSmallIntegerField(
-            verbose_name=u'Klasė',
             validators=[
-                validators.MaxValueValidator(12),
                 validators.MinValueValidator(6),
-                ])
+                validators.MaxValueValidator(11),
+                ],
+            verbose_name=_(u'class'),
+            )
 
     school_year = models.IntegerField(
-            verbose_name=u'Klasės atnaujinimo metai',
-            help_text=(
-                u'Nurodo kurių metų sausio 3 dieną buvo '
-                u'„school_class“ klasėje.'),
-            )
-
-    school = models.ForeignKey(
-            School,
-            verbose_name=u'Mokykla',
-            )
-
-    home_address = models.CharField(max_length=90,
-            verbose_name=u'Namų adresas',
-            help_text=(
-                u'Pavyzdžiui: „Subačiaus g. 120, LT-11345 Vilnius.“ '
-                u'arba „Antagavės k., Ignalinos pšt., '
-                u'LT-30148 Ignalinos r. sav.“'
+            validators=[
+                validators.MinValueValidator(2005),
+                validators.MaxValueValidator(2015),
+                ],
+            verbose_name=_(u'class update year'),
+            help_text=_(
+                u'This field value shows, at which year January 3 day '
+                u'student was in school_class.'
                 ),
             )
 
-    create_timestamp = models.DateTimeField(
-            verbose_name=u'Užpildymo laikas',
+    school = models.ForeignKey(
+            registration_models.School,
+            verbose_name=_(u'school'),
+            )
+
+    home_address = models.ForeignKey(
+            registration_models.Address,
+            verbose_name=_(u'home address'),
+            help_text=_(
+                u'Null only if base_info.generated_address is present.'),
+            blank=True,
+            null=True,
+            )
+
+    session_programs_ratings = models.ManyToManyField(
+            SessionProgram,
+            through='SessionProgramRating',
+            verbose_name=_(u'ratings of the session programs')
+            )
+
+    commit_timestamp = models.DateTimeField(
+            verbose_name=_(u'commit timestamp'),
             auto_now_add=True,
             )
 
-    # Information entered by administrator:
+    class Meta(object):
+        ordering = [u'invitation',]
+        verbose_name = _(u'student info')
+        verbose_name_plural = _(u'student infos')
+
+    def __unicode__(self):
+        return u'<{0.id}> invitation: {0.invitation}'.format(self)
+
+
+class RegistrationInfo(StudentInfo):
+    """ Information entered by administrator.
+    """
 
     payed = models.BooleanField(
-            verbose_name=u'Susimokėjo',
-            help_text=u'Mokinys susimokėjo registracijos mokestį.',
+            verbose_name=_(u'payed'),
             blank=True,
+            help_text=_(u'True, if pupil have payed registration fee.'),
             )
 
     chosen = models.BooleanField(
-            verbose_name=u'Priimtas',
-            help_text=u'Mokinys priimtas į sesiją.',
+            verbose_name=_(u'chosen'),
+            help_text=_(u'Student was chosen.'),
             blank=True,
+            )
+
+    comment = models.TextField(
+            verbose_name=_(u'comment'),
+            blank=True,
+            null=True,
+            )
+
+    assigned_session_program = models.ForeignKey(
+            SessionProgram,
+            verbose_name=_(u'assigned session program'),
+            blank=True,
+            null=True,
+            )
+
+    class Meta(object):
+        ordering = [u'invitation',]
+        verbose_name = _(u'registration info')
+        verbose_name_plural = _(u'registration infos')
+
+    def __unicode__(self):
+        return u'<{0.id}> invitation: {0.invitation}'.format(self)
+
+
+class SessionProgramRating(models.Model):
+    """ Student rating of the session program.
+    """
+
+    student = models.ForeignKey(
+            StudentInfo,
+            verbose_name=_(u'student'),
+            )
+
+    program = models.ForeignKey(
+            SessionProgram,
+            verbose_name=_(u'program')
+            )
+
+    rating = models.PositiveSmallIntegerField(
+            verbose_name=_(u'rating'),
+            help_text=_(
+                u'The bigger the number, the more you want to '
+                u'participate in that program.'),
             )
 
     comment = models.TextField(
             blank=True,
             null=True,
-            verbose_name=u'Pastabos',
+            verbose_name=_(u'Motivation'),
             )
 
     class Meta(object):
-        db_table = u'session_reg_studentinfo'
-        ordering = [u'invitation',]
-        verbose_name = u'Akademiko informacija'
-        verbose_name_plural = u'Akademikų informacijos'
-
-    def __unicode__(self):
-        return u'<{0.id}> kvietimas: {0.invitation}'.format(self)
+        ordering = [u'student', u'program',]
+        verbose_name = u'session program rating'
+        verbose_name_plural = u'session program ratings'
 
 
 class ParentInfo(models.Model):
     """ Parent information.
     """
 
+    PARENT_CHILD_RELATIONS = (
+            (u'M', _(u'mother')),
+            (u'T', _(u'father')),
+            (u'GM', _(u'tutoress')),
+            (u'GT', _(u'tutor')),
+            (u'N', _(u'none')),
+            )
+
     child = models.ForeignKey(
             StudentInfo,
-            related_name='parents',
-            verbose_name=u'Vaikas',
+            verbose_name=_(u'child'),
             )
 
     relation = models.CharField(
             max_length=2,
-            choices=INFO['parent_child_relations'],
-            verbose_name=u'Ryšys',
+            choices=PARENT_CHILD_RELATIONS,
+            verbose_name=_(u'relation'),
             )
 
-    first_name = models.CharField(
-            max_length=45,
-            verbose_name=u'Vardas',
-            validators=[
-                NamesValidator(
-                    ALPHABET_LT,
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    ),],
+    first_name = utils_models.FirstNameField(
+            verbose_name=_(u'first name'),
             )
 
-    last_name = models.CharField(
-            max_length=45,
-            verbose_name=u'Pavardė',
-            validators=[
-                SurnameValidator(
-                    ALPHABET_LT,
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    ),],
+    last_name = utils_models.LastNameField(
+            verbose_name=_(u'last name'),
             )
 
     job = models.CharField(
             max_length=128,
             blank=True,
-            verbose_name=u'Darbovietė',
+            verbose_name=_(u'job'),
             )
 
-    job_phone_number = models.CharField(
-            max_length=16,
-            verbose_name=u'Darbo telefono numeris',
-            help_text=(
-                u'Arba įveskite teisingą numerį, arba palikite laukelį '
-                u'visiškai tuščią.'
-                ),
-            validators=[
-                PhoneNumberValidator(
-                    u'370',
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    )
-                ],
+    job_phone_number = utils_models.PhoneNumberField(
+            verbose_name=_(u'job phone number'),
+            help_text=_(
+                u'Either enter a valid phone number or leave the field '
+                u'empty.'),
             blank=True,
             )
 
     job_position = models.CharField(
             max_length=128,
             blank=True,
-            verbose_name=u'Pareigos',
+            verbose_name=_(u'job position'),
             )
 
-    phone_number = models.CharField(
-            max_length=16,
-            verbose_name=u'Mobiliojo telefono numeris',
-            validators=[
-                PhoneNumberValidator(
-                    u'370',
-                    validation_exception_type=ValidationError,
-                    convert=False,
-                    )
-                ],
+    phone_number = utils_models.PhoneNumberField(
+            verbose_name=_(u'mobile phone number'),
             )
 
     email = models.EmailField(
             max_length=128,
-            verbose_name=u'Elektroninio pašto adresas',
+            verbose_name=_(u'email address'),
             )
 
     class Meta(object):
-        db_table = u'session_reg_parentinfo'
         ordering = [u'last_name', u'first_name',]
-        verbose_name = u'Tėvo informacija'
-        verbose_name_plural = u'Tėvų informacijos'
+        verbose_name = _(u'parent info')
+        verbose_name_plural = _(u'parent infos')
 
     def __unicode__(self):
         return u'<{0.child}> {0.first_name} {0.last_name}'.format(self)
