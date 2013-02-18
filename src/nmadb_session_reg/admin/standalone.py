@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from nmadb_session_reg import models
 from nmadb_utils import admin as utils
+from nmadb_utils import actions
 
 
 class SessionProgramAdmin(utils.ModelAdmin):
@@ -161,6 +162,10 @@ class ParentInfoAdmin(utils.ModelAdmin):
             'child__first_name',
             'child__last_name',
             )
+
+
+actions.register(_(u'Import student base info'),
+    'nmadb-session-reg-import-base-info')
 
 
 admin.site.register(models.SessionProgram, SessionProgramAdmin)

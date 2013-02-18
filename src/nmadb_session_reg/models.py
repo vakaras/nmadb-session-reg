@@ -338,3 +338,34 @@ class ParentInfo(models.Model):
 
     def __unicode__(self):
         return u'<{0.child}> {0.first_name} {0.last_name}'.format(self)
+
+
+class Info(models.Model):
+    """ Session system information.
+    """
+
+    year = models.PositiveSmallIntegerField(
+            verbose_name=_(u'year'),
+            )
+
+    session = models.CharField(
+            max_length=128,
+            verbose_name=_(u'session'),
+            )
+
+    manager_name_dative = models.CharField(
+            max_length=128,
+            verbose_name=_(u'manager name dative'),
+            )
+
+    manager_email = models.EmailField(
+            verbose_name=_(u'manager email'),
+            )
+
+    manager_phone = utils_models.PhoneNumberField(
+            verbose_name=_(u'manager phone'),
+            )
+
+    admin_email = models.EmailField(
+            verbose_name=_(u'administrator email'),
+            )
