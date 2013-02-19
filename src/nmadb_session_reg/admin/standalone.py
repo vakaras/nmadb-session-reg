@@ -1,10 +1,13 @@
 from django.db import transaction
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.sites.models import Site
 
 from nmadb_session_reg import models
 from nmadb_utils import admin as utils
 from nmadb_utils import actions
+from nmadb_automation import mail
+from nmadb_session_reg.config import info
 
 
 class SessionProgramAdmin(utils.ModelAdmin):
@@ -46,6 +49,63 @@ class BaseInfoAdmin(utils.ModelAdmin):
     readonly_fields = (
             'commit_timestamp',
             )
+
+    actions = utils.ModelAdmin.actions + [
+            'send_mail',
+            'send_sync_template_mail',
+            'send_async_template_mail',
+            'send_invitations',
+            ]
+
+    def send_mail(self, request, queryset):
+        """ Allows to send email.
+        """
+        return mail.send_mail_admin_action(
+                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                request,
+                queryset)
+    send_mail.short_description = _(u'send email')
+
+    def send_sync_template_mail(self, request, queryset):
+        """ Sends template email synchronously.
+        """
+        return mail.send_template_mail_admin_action(
+                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                False, request, queryset)
+    send_sync_template_mail.short_description = _(
+            u'send template mail synchronously')
+
+    def send_async_template_mail(self, request, queryset):
+        """ Sends template email asynchronously.
+        """
+        print 'send async'
+        return mail.send_template_mail_admin_action(
+                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                True, request, queryset)
+    send_async_template_mail.short_description = _(
+            u'send template mail asynchronously')
+
+    def send_invitations(self, request, queryset):
+        """ Sends invitations.
+        """
+        print 'send invitations'
+        def create_context(base_info):
+            """ Creates invitation object and returns context.
+            """
+            invitation = models.Invitation()
+            invitation.base = base_info
+            invitation.payment = base_info.payment
+            invitation.save()
+            return [(base_info.email, {
+                'base_info': base_info,
+                'info': info,
+                'invitation': invitation,
+                'current_site': unicode(Site.objects.get_current()),
+                })]
+        return mail.send_template_mail_admin_action(
+                create_context, True, request, queryset,
+                action=u'send_invitations')
+    send_invitations.short_description = _(u'send invitations')
 
 
 class InvitationAdmin(utils.ModelAdmin):
