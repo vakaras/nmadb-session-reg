@@ -1,0 +1,15 @@
+{% extends "nmadb-session-reg/base.html" %}
+
+{% block messages %}
+<p>
+  Jūsų duomenys sėkmingai išsaugoti. Dalyvavimo sesijoje
+  patvirtinimas kiekvienam asmeniškai bus išsiųstas iki
+  {{ info.confirmation_deadline }}. Iškilus bet kokioms problemoms ar
+  nesklandumams rašykite
+  <a href="mailto:{{ info.manager_email }}">{{ info.manager_email }}</a>.
+</p>
+
+<p>
+  <a href="http://www.nmakademija.lt/">Eiti į NMA svetainę.</a>
+</p>
+{% endblock %}

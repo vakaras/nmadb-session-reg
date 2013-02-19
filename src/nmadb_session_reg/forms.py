@@ -1,3 +1,5 @@
+import datetime
+
 from django.core import validators
 from django import forms
 from django.utils.translation import ugettext as _
@@ -17,7 +19,7 @@ def once(func):
     cached_value_name = '_' + func.func_name
     def wrapper(self, *args, **kwargs):
         if not hasattr(self, cached_value_name):
-            setattr(self, cached_value_name, func(*args, **kwargs))
+            setattr(self, cached_value_name, func(self, *args, **kwargs))
         return getattr(self, cached_value_name)
     return wrapper
 
@@ -27,14 +29,42 @@ class StudentInfoForm(forms.ModelForm):
     """
 
     class Meta(object):
-        model = models.StudentInfo
+        model = models.RegistrationInfo
         exclude = (
+                # StudentInfo
                 'invitation',
                 'school_year',
                 'home_address',
                 'session_programs_ratings',
                 'commit_timestamp',
+                # RegistrationInfo
+                'payed',
+                'chosen',
+                'comment',
+                'assigned_session_program',
                 )
+
+
+class ParentInfoForm(forms.ModelForm):
+    """ Form for entering parent info.
+    """
+
+    relation = forms.ChoiceField(
+            choices=models.ParentInfo.PARENT_CHILD_RELATIONS,
+            label=_(u'Relation'),
+            help_text=_(
+                u'If there is only one of the parents, then '
+                u'please fill information only about him and '
+                u'in other form choose \u201cnone\u201d'
+                ),
+            widget=forms.Select(
+                attrs={'class': 'parent-relation'},
+                )
+            )
+
+    class Meta(object):
+        model = models.ParentInfo
+        exclude = ('child',)
 
 
 class RegistrationFormSet(object):
@@ -42,10 +72,47 @@ class RegistrationFormSet(object):
     forms.
     """
 
-    def __init__(self, base_info, POST=None):
+    def __init__(self, base_info, invitation, POST=None):
 
         self.POST = POST
         self.base_info = base_info
+        self.invitation = invitation
+        self.errors = []
+
+    @once
+    def is_valid(self):
+        """ Checks if all forms are valid.
+        """
+
+        valid = True
+
+        if not self.student_form.is_valid():
+            self.errors.append(_(u'Fix errors in the student form.'))
+            valid = False
+
+        self.parent_forms_valid = []
+        parent_error_added = False
+        for i, parent_form in enumerate(self.parent_forms):
+            if self.POST.get(
+                    parent_form['relation'].html_name, u'') != u'N':
+                if not parent_form.is_valid():
+                    if not parent_error_added:
+                        self.errors.append(_(
+                            u'Fix errors in parent forms.'))
+                        parent_error_added = True
+                else:
+                    self.parent_forms_valid.append(parent_form)
+            else:
+                self.parent_forms[i] = ParentInfoForm(
+                        prefix=u'parent_info_{0}'.format(i),
+                        initial={'relation': u'N'},
+                        )
+        if not self.parent_forms_valid and not parent_error_added:
+            self.errors.append(_(u'Fill parent forms.'))
+            parent_error_added = True
+        valid = valid and not parent_error_added
+
+        return valid
 
     @property
     @once
@@ -53,7 +120,6 @@ class RegistrationFormSet(object):
         """ Student form factory.
         """
         if self.POST is None:
-            today = datetime.date.today()
             return StudentInfoForm(
                     prefix=u'student_info',
                     initial={
@@ -61,11 +127,53 @@ class RegistrationFormSet(object):
                         'last_name': self.base_info.last_name,
                         'email': self.base_info.email,
                         'phone_number': '+370',
-                        'school_year': today.year + int(today.month >= 9),
                         },
                     )
         else:
             return StudentInfoForm(self.POST, prefix=u'student_info')
+
+    @property
+    @once
+    def parent_forms(self):
+        """ Parent forms list factory.
+        """
+        if self.POST is None:
+            return [
+                    ParentInfoForm(
+                        prefix=u'parent_info_' + unicode(index),
+                        initial={
+                            'relation': relation,
+                            'job_phone_number': '+370',
+                            'phone_number': '+370',
+                            }
+                        )
+                    for index, relation in enumerate((u'M', u'T'))
+                    ]
+        else:
+            return [
+                    ParentInfoForm(
+                        self.POST,
+                        prefix=u'parent_info_' + unicode(index),
+                        )
+                    for index in range(2)
+                    ]
+
+    def save(self):
+        """ Saves all forms.
+        """
+        today = datetime.date.today()
+
+        student = self.student_form.save(commit=False)
+        student.invitation = self.invitation
+        student.school_year = today.year + int(today.month >= 9)
+        # TODO: student.home_address
+        # TODO: session_programs_ratings
+        student.save()
+
+        for parent_form in self.parent_forms:
+            parent = parent_form.save(commit=False)
+            parent.child = student
+            parent.save()
 
 
 IMPORT_BASE_INFO_REQUIRED_COLUMNS = {

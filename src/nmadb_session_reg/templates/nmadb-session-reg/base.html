@@ -1,0 +1,57 @@
+{% comment %} vim: ft=htmldjango
+{% endcomment %}
+{# FIXME: Internationalize. #}
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>
+            {% block title %}
+            Registracija į NMA {{ info.session }} sesiją
+            {% endblock %}
+        </title>
+        <meta 
+            http-equiv="Content-Type"
+            content="text/html; charset=utf-8" />
+        <link
+            rel="stylesheet" type="text/css"
+            href="{{ STATIC_URL }}default.css" />
+    </head>
+    <body>
+      <div class="page">
+        <div id="header">
+          {% block header %}
+          {% endblock %}
+        </div>
+        <div id="messages">
+          {% block messages %}
+          {% if messages %}
+          TODO: {{ messages }}
+          {% endif %}
+          {% endblock %}
+        </div>
+        <div id="content">
+          {% block content %}
+          {% endblock %}
+        </div>
+        <div id="footer">
+          {% block footer %}
+          <p>
+            Jei kils neaiškumų arba norėsite paklausti, būtinai rašykite
+            {{ info.manager_name_dative }} el. pašto adresu
+            {{ info.manager_email }} arba skambinkite
+            {{ info.manager_phone }}.
+          </p>
+          <p>
+            Taip pat, jei pastebėsite registracijos sistemos klaidą,
+            būtume dėkingi, jei apie ją kuo skubiau praneštumėte
+            elektroninio pašto adresu {{ info.admin_email }}. Ačiū.
+          </p>
+          <p>
+            NMA serveris mano, kad dabar yra:
+            {% now "Y-m-d H:i:s" %}.
+          </p>
+          {% endblock %}
+        </div>
+      </div>
+    </body>
+</html>

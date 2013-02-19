@@ -1,0 +1,30 @@
+{% extends "nmadb-session-reg/form.html" %}
+
+{% block form-errors %}
+{% if form.errors %}
+<ul class="errorlist">
+  {% for error in form.errors %}
+  <li class="error">{{ error }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
+
+{% block form-content %}
+<fieldset>
+  <legend>Informacija apie mokinį.</legend>
+  <ol class="form">
+    {{ form.student_form.as_ul }}
+  </ol>
+</fieldset>
+{% for parent_form in form.parent_forms %}
+<fieldset class="form">
+  <legend class="form">
+    Informacija apie vieną iš tėvų (globėjų).
+  </legend>
+  <ol class="form">
+    {{ parent_form.as_ul }}
+  </ol>
+</fieldset>
+{% endfor %}
+{% endblock %}

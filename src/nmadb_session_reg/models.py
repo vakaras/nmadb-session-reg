@@ -369,3 +369,7 @@ class Info(models.Model):
     admin_email = models.EmailField(
             verbose_name=_(u'administrator email'),
             )
+
+    confirmation_deadline = models.DateField(
+            verbose_name=_(u'confirmation deadline'),
+            )

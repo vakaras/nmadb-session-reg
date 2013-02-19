@@ -44,6 +44,21 @@ def register(request, uuid):
                     },
                 )
 
+    if request.method == 'POST':
+        form = forms.RegistrationFormSet(
+                base_info, invitation, request.POST)
+        if form.is_valid():
+            form.save()
+            return shortcuts.redirect(
+                    'nmadb-session-reg-registration', uuid)
+    else:
+        form = forms.RegistrationFormSet(base_info, invitation)
+
+    return {
+            'info': info,
+            'form': form,
+            }
+
 
 @admin.site.admin_view
 @render_to('admin/file-form.html')

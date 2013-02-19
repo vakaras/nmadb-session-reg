@@ -1,0 +1,32 @@
+{% extends "nmadb-session-reg/base.html" %}
+
+{% block content %}
+
+<div class="form-error">
+  {% block form-errors %}
+  {% if form_errors %}
+  <p class="error">Ištaisykite klaidas žemiau.</p>
+  {% endif %}
+  {% endblock %}
+</div>
+
+<div class="static-info">
+  {% block static-info %}{% endblock %}
+</div>
+
+<p class="form-note">
+  Pildydami formą nepamirškite naudoti lietuviškų simbolių:
+  ą, č, ę, ė, į, š, ų, ū, ž, Ą, Č, Ę, Ė, Į, Š, Ų, Ū, Ž, „, “, –.
+</p>
+
+{% block form %}
+<form action="" method="POST">{% csrf_token %}
+  {{ form.non_field_errors }}
+  {% block form-content %}{% endblock %}
+  {% block form-buttons %}
+  <input class="form-button" type="submit" value="Įrašyti" />
+  {% endblock %}
+</form>
+{% endblock %}
+
+{% endblock %}
