@@ -150,8 +150,8 @@ class RegistrationFormSet(object):
             parent_error_added = True
         valid = valid and not parent_error_added
 
+        ratings = set()
         if self.rating_forms:
-            ratings = set()
             for rating_form in self.rating_forms:
                 if not rating_form.is_valid():
                     valid = False
