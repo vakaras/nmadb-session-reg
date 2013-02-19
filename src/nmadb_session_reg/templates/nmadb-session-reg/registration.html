@@ -11,12 +11,25 @@
 {% endblock %}
 
 {% block form-content %}
+
 <fieldset>
   <legend>Informacija apie mokinį.</legend>
   <ol class="form">
     {{ form.student_form.as_ul }}
   </ol>
 </fieldset>
+
+<fieldset>
+  <legend>Namų adresas.</legend>
+  <p class="form-note">
+    Jei kyla problemų įvedant adresą rašykite
+    <a href="mailto:{{ info.admin_email }}">{{ info.admin_email }}</a>
+  </p>
+  <ol class="form">
+    {{ form.address_form.as_ul }}
+  </ol>
+</fieldset>
+
 {% for parent_form in form.parent_forms %}
 <fieldset class="form">
   <legend class="form">
@@ -27,4 +40,41 @@
   </ol>
 </fieldset>
 {% endfor %}
+
+{% if form.rating_forms %}
+<fieldset class="form">
+  <legend class="form">
+    Sesijos programos pasirinkimas.
+  </legend>
+  <p class="form-note">
+    Nurodykite kokioje sesijos programoje labiausiai norėtumėte
+    dalyvauti, priskirdami kiekvienai iš programų
+    <span style="font-weight: bold;">skirtingus</span>
+    įverčius nuo 1 iki {{ form.rating_forms|length }}:
+    <span style="font-weight: bold;">
+      {{ form.rating_forms|length }} – labiausiai norėtumėte,
+      1 – mažiausiai norėtumėte.
+    </span>
+  </p>
+  <p class="form-note">
+    Sesijos metu turėsite galimybę dalyvauti tik vienoje programoje.
+    {{ info.confirmation_deadline|date:"Y-m-d" }} atsiųsime laišką ar
+    esi priimtas ir kurioje iš programų Tau siūlome dalyvauti. Po
+    kiekviena iš programų gali pakomentuoti, kodėl (ne)norėtum
+    dalyvauti joje.
+  </p>
+  <ol class="form">
+    {% for rating_form in form.rating_forms %}
+    <li class="program-rating">
+      {{ rating_form.rating.errors }}
+      {{ rating_form.instance.program.title }}:
+      {{ rating_form.rating }}
+      {{ rating_form.comment.errors }}
+      {{ rating_form.comment }}
+    </li>
+    {% endfor %}
+  </ol>
+</fieldset>
+{% endif %}
+
 {% endblock %}

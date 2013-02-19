@@ -3,6 +3,7 @@ import datetime
 from django.core import validators
 from django import forms
 from django.utils.translation import ugettext as _
+from django.utils.functional import lazy
 
 from db_utils.validators.name import (
         NamesValidator, SurnameValidator, ALPHABET_LT)
@@ -11,6 +12,7 @@ from pysheets.sheet import Sheet
 from nmadb_session_reg import models
 from nmadb_registration.forms import ImportValidateRow
 from nmadb_registration.models import Section as SectionModel
+from nmadb_registration import forms as registration_forms
 
 
 def once(func):
@@ -67,6 +69,38 @@ class ParentInfoForm(forms.ModelForm):
         exclude = ('child',)
 
 
+def get_rating_choices():
+    """ Generates possible rating choices.
+    """
+    max_value = models.SessionProgram.objects.count() + 1
+    return tuple(zip(range(1, max_value), range(1, max_value)))
+
+class SessionProgramRatingForm(forms.ModelForm):
+    """ From for selecting program.
+    """
+
+    rating = forms.ChoiceField(
+            choices=lazy(get_rating_choices, tuple)(),
+            label=_(u'Rating'),
+            widget=forms.Select(
+                attrs={'class': 'program-rating'},
+                ),
+            required=True,
+            )
+
+    comment = forms.CharField(
+            label=_(u'Comment'),
+            widget=forms.Textarea(
+                attrs={'class': 'program-rating', 'rows': 3,},
+                ),
+            required=False,
+            )
+
+    class Meta(object):
+        model = models.SessionProgramRating
+        exclude = ('student', 'program',)
+
+
 class RegistrationFormSet(object):
     """ Formset that encapsulates checking of all registration
     forms.
@@ -88,6 +122,10 @@ class RegistrationFormSet(object):
 
         if not self.student_form.is_valid():
             self.errors.append(_(u'Fix errors in the student form.'))
+            valid = False
+
+        if not self.address_form.is_valid():
+            self.errors.append(_(u'Fix errors in the address form.'))
             valid = False
 
         self.parent_forms_valid = []
@@ -112,6 +150,19 @@ class RegistrationFormSet(object):
             parent_error_added = True
         valid = valid and not parent_error_added
 
+        if self.rating_forms:
+            ratings = set()
+            for rating_form in self.rating_forms:
+                if not rating_form.is_valid():
+                    valid = False
+                    self.errors.append(_(u'Fix errors in rating forms.'))
+                else:
+                    ratings.add(rating_form.cleaned_data['rating'])
+        if len(ratings) != len(self.rating_forms):
+            valid = False
+            self.errors.append(_(
+                u'Assign different values to different programs.'))
+
         return valid
 
     @property
@@ -131,6 +182,19 @@ class RegistrationFormSet(object):
                     )
         else:
             return StudentInfoForm(self.POST, prefix=u'student_info')
+
+    @property
+    @once
+    def address_form(self):
+        """ Address form factory.
+        """
+        if self.POST is None:
+            return registration_forms.AddressForm(prefix=u'address_form')
+        else:
+            return registration_forms.AddressForm(
+                    self.POST,
+                    prefix=u'address_form')
+
 
     @property
     @once
@@ -158,19 +222,53 @@ class RegistrationFormSet(object):
                     for index in range(2)
                     ]
 
+    @property
+    @once
+    def rating_forms(self):
+        """ Rating forms list factory.
+        """
+        self.ratings = []
+        for program in models.SessionProgram.objects.all():
+            rating = models.SessionProgramRating()
+            rating.program = program
+            self.ratings.append(rating)
+        if self.POST is None:
+            return [
+                    SessionProgramRatingForm(
+                        instance=rating,
+                        prefix=u'rating_' + unicode(rating.program.id))
+                    for rating in self.ratings
+                    ]
+        else:
+            return [
+                    SessionProgramRatingForm(
+                        self.POST,
+                        instance=rating,
+                        prefix=u'rating_' + unicode(rating.program.id))
+                    for rating in self.ratings
+                    ]
+
     def save(self):
         """ Saves all forms.
         """
         today = datetime.date.today()
 
+        address = self.address_form.save()
+
         student = self.student_form.save(commit=False)
         student.invitation = self.invitation
         student.school_year = today.year + int(today.month >= 9)
-        # TODO: student.home_address
-        # TODO: session_programs_ratings
+        student.home_address = address
         student.save()
 
-        for parent_form in self.parent_forms:
+        self.base_info.generated_address = unicode(address)
+        self.base_info.save()
+
+        for rating in self.ratings:
+            rating.student = student
+            rating.save()
+
+        for parent_form in self.parent_forms_valid:
             parent = parent_form.save(commit=False)
             parent.child = student
             parent.save()

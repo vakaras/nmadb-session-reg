@@ -4,8 +4,8 @@
 <p>
   Jūsų duomenys sėkmingai išsaugoti. Dalyvavimo sesijoje
   patvirtinimas kiekvienam asmeniškai bus išsiųstas iki
-  {{ info.confirmation_deadline }}. Iškilus bet kokioms problemoms ar
-  nesklandumams rašykite
+  {{ info.confirmation_deadline|date:"Y-m-d" }}. Iškilus bet kokioms
+  problemoms ar nesklandumams rašykite
   <a href="mailto:{{ info.manager_email }}">{{ info.manager_email }}</a>.
 </p>
 
