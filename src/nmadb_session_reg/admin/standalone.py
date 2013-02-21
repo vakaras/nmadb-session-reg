@@ -145,6 +145,7 @@ class StudentInfoAdmin(utils.ModelAdmin):
             'phone_number',
             'school_class',
             'school',
+            'section_display',
             )
 
     list_filter = (
@@ -156,11 +157,18 @@ class StudentInfoAdmin(utils.ModelAdmin):
             'first_name',
             'last_name',
             'school__title',
+            'invitation__base__section__title',
             )
 
     readonly_fields = (
             'commit_timestamp',
             )
+
+    def section_display(self, obj):
+        """ Returns student's section.
+        """
+        return obj.invitation.base.section.title
+    section_display.short_description = _(u'section')
 
 
 class RegistrationInfoAdmin(utils.ModelAdmin):
@@ -176,6 +184,7 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'payed',
             'chosen',
             'assigned_session_program',
+            'section_display',
             )
 
     list_filter = (
@@ -188,6 +197,7 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'first_name',
             'last_name',
             'school__title',
+            'invitation__base__section__title',
             )
 
     readonly_fields = (
@@ -199,6 +209,12 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'chosen',
             'assigned_session_program',
             )
+
+    def section_display(self, obj):
+        """ Returns student's section.
+        """
+        return obj.invitation.base.section.title
+    section_display.short_description = _(u'section')
 
 
 class ParentInfoAdmin(utils.ModelAdmin):
