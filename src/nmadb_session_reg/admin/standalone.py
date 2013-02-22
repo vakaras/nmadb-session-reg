@@ -10,6 +10,40 @@ from nmadb_automation import mail
 from nmadb_session_reg.config import info
 
 
+class SendMailMixin(object):
+    """ Admin actions for sending mail.
+    """
+
+    def send_mail(self, request, queryset):
+        """ Allows to send email.
+        """
+        return mail.send_mail_admin_action(
+                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                request,
+                queryset)
+    send_mail.short_description = _(u'send email')
+
+
+    def send_sync_template_mail(self, request, queryset):
+        """ Sends template email synchronously.
+        """
+        return mail.send_template_mail_admin_action(
+                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                False, request, queryset)
+    send_sync_template_mail.short_description = _(
+            u'send template mail synchronously')
+
+
+    def send_async_template_mail(self, request, queryset):
+        """ Sends template email asynchronously.
+        """
+        return mail.send_template_mail_admin_action(
+                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                True, request, queryset)
+    send_async_template_mail.short_description = _(
+            u'send template mail asynchronously')
+
+
 class SessionProgramAdmin(utils.ModelAdmin):
     """ Administration for session program.
     """
@@ -21,7 +55,7 @@ class SessionProgramAdmin(utils.ModelAdmin):
             )
 
 
-class BaseInfoAdmin(utils.ModelAdmin):
+class BaseInfoAdmin(utils.ModelAdmin, SendMailMixin):
     """ Administration for base info.
     """
 
@@ -57,38 +91,9 @@ class BaseInfoAdmin(utils.ModelAdmin):
             'send_invitations',
             ]
 
-    def send_mail(self, request, queryset):
-        """ Allows to send email.
-        """
-        return mail.send_mail_admin_action(
-                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
-                request,
-                queryset)
-    send_mail.short_description = _(u'send email')
-
-    def send_sync_template_mail(self, request, queryset):
-        """ Sends template email synchronously.
-        """
-        return mail.send_template_mail_admin_action(
-                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
-                False, request, queryset)
-    send_sync_template_mail.short_description = _(
-            u'send template mail synchronously')
-
-    def send_async_template_mail(self, request, queryset):
-        """ Sends template email asynchronously.
-        """
-        print 'send async'
-        return mail.send_template_mail_admin_action(
-                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
-                True, request, queryset)
-    send_async_template_mail.short_description = _(
-            u'send template mail asynchronously')
-
     def send_invitations(self, request, queryset):
         """ Sends invitations.
         """
-        print 'send invitations'
         def create_context(base_info):
             """ Creates invitation object and returns context.
             """
@@ -165,7 +170,7 @@ class StudentInfoAdmin(utils.ModelAdmin):
             )
 
 
-class RegistrationInfoAdmin(utils.ModelAdmin):
+class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
     """ Administration for registration info.
     """
 
@@ -206,6 +211,12 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'chosen',
             'assigned_session_program',
             )
+
+    actions = utils.ModelAdmin.actions + [
+            'send_mail',
+            'send_sync_template_mail',
+            'send_async_template_mail',
+            ]
 
 
 class ParentInfoAdmin(utils.ModelAdmin):
