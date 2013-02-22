@@ -199,6 +199,12 @@ class StudentInfo(models.Model):
     def __unicode__(self):
         return u'<{0.id}> invitation: {0.invitation}'.format(self)
 
+    def section(self):
+        """ Returns the title of student's section.
+        """
+        return self.invitation.base.section.title
+    section.short_description = _(u'section')
+
 
 class RegistrationInfo(StudentInfo):
     """ Information entered by administrator.
@@ -236,6 +242,34 @@ class RegistrationInfo(StudentInfo):
 
     def __unicode__(self):
         return u'<{0.id}> invitation: {0.invitation}'.format(self)
+
+    def selection(self, index):
+        """ Student selection with given index.
+        """
+        ratings = SessionProgramRating.objects.filter(
+                student=self).order_by('-rating')
+        try:
+            rating = ratings[index]
+        except IndexError:
+            return None
+        else:
+            return u'{0.id} {0.title} ({1})'.format(
+                    rating.program, rating.rating)
+
+    def first_selection(self):
+        """ Session program that student assigned a highest rating.
+        """
+        return self.selection(0)
+
+    def second_selection(self):
+        """ Session program that student assigned a second highest rating.
+        """
+        return self.selection(1)
+
+    def third_selection(self):
+        """ Session program that student assigned a third highest rating.
+        """
+        return self.selection(2)
 
 
 class SessionProgramRating(models.Model):

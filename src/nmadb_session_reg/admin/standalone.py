@@ -145,7 +145,7 @@ class StudentInfoAdmin(utils.ModelAdmin):
             'phone_number',
             'school_class',
             'school',
-            'section_display',
+            'section',
             )
 
     list_filter = (
@@ -164,12 +164,6 @@ class StudentInfoAdmin(utils.ModelAdmin):
             'commit_timestamp',
             )
 
-    def section_display(self, obj):
-        """ Returns student's section.
-        """
-        return obj.invitation.base.section.title
-    section_display.short_description = _(u'section')
-
 
 class RegistrationInfoAdmin(utils.ModelAdmin):
     """ Administration for registration info.
@@ -184,7 +178,10 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'payed',
             'chosen',
             'assigned_session_program',
-            'section_display',
+            'section',
+            'first_selection',
+            'second_selection',
+            'third_selection',
             )
 
     list_filter = (
@@ -209,12 +206,6 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'chosen',
             'assigned_session_program',
             )
-
-    def section_display(self, obj):
-        """ Returns student's section.
-        """
-        return obj.invitation.base.section.title
-    section_display.short_description = _(u'section')
 
 
 class ParentInfoAdmin(utils.ModelAdmin):
