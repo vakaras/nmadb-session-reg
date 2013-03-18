@@ -149,7 +149,7 @@ class StudentInfo(models.Model):
     school_class = models.PositiveSmallIntegerField(
             validators=[
                 validators.MinValueValidator(6),
-                validators.MaxValueValidator(11),
+                validators.MaxValueValidator(12),
                 ],
             verbose_name=_(u'class'),
             )
