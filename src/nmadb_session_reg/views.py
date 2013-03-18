@@ -10,6 +10,8 @@ from django.utils.translation import ugettext as _
 from nmadb_registration.conditions import check_condition
 from nmadb_session_reg import models, forms
 from nmadb_session_reg.config import info
+from nmadb_automation import mail
+from nmadb_automation import models as automation_models
 
 
 @render_to('nmadb-session-reg/registration.html')
@@ -25,6 +27,20 @@ def register(request, uuid):
     except models.StudentInfo.DoesNotExist:
         pass
     else:
+        if check_condition(u'send-confirmation-mail'):
+            registration_info = student_info.registrationinfo
+            template = automation_models.Email.objects.get(id=3)
+            assert u'pasirinkimai' in template.subject
+            mail.send_template_mail(
+                    template,
+                    (student_info.email,),
+                    u'FIXME',
+                    {
+                        'base_info': base_info,
+                        'student_info': student_info,
+                        'registration_info': registration_info,
+                        'info': info,
+                    })
         return direct_to_template(
                 request,
                 template='nmadb-session-reg/registration-finished.html',
