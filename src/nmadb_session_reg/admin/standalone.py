@@ -169,6 +169,14 @@ class StudentInfoAdmin(utils.ModelAdmin):
             'commit_timestamp',
             )
 
+    raw_id_fields = (
+            'invitation',
+            'school',
+            'home_address',
+            )
+
+    list_per_page = 20
+
 
 class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
     """ Administration for registration info.
@@ -217,6 +225,14 @@ class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
             'send_sync_template_mail',
             'send_async_template_mail',
             ]
+
+    raw_id_fields = (
+            'invitation',
+            'school',
+            'home_address',
+            )
+
+    list_per_page = 20
 
 
 class ParentInfoAdmin(utils.ModelAdmin):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 try:
-    import dbinterface
+    import nmadb_contacts
 except ImportError:
     import nmadb_session_reg.admin.standalone
 else:

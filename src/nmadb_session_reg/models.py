@@ -407,3 +407,13 @@ class Info(models.Model):
     confirmation_deadline = models.DateField(
             verbose_name=_(u'confirmation deadline'),
             )
+
+    # TODO: Add normal session type:
+    # SESSION_TYPE = (
+            #(u'Wi', _(u'winter'),),
+            #(u'Sp', _(u'spring'),),
+            #(u'Su', _(u'summer'),),
+            #(u'Au', _(u'autumn'),),
+            #)
+    # TODO: Add also a marker if the session is section based or program
+    # based.
