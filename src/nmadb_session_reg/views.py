@@ -1,13 +1,14 @@
 from django.db import transaction
 from django.contrib import admin
 from django import shortcuts
-from django.views.generic.simple import direct_to_template
 from django.core import urlresolvers
 from annoying.decorators import render_to
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 
 from nmadb_registration.conditions import check_condition
+from nmadb_registration.models import Section
+from nmadb_registration.forms import ImportTitleOnlyForm
 from nmadb_session_reg import models, forms
 from nmadb_session_reg.config import info
 from nmadb_automation import mail
@@ -41,10 +42,10 @@ def register(request, uuid):
                         'registration_info': registration_info,
                         'info': info,
                     })
-        return direct_to_template(
+        return shortcuts.render(
                 request,
-                template='nmadb-session-reg/registration-finished.html',
-                extra_context={
+                'nmadb-session-reg/registration-finished.html',
+                {
                     'base_info': base_info,
                     'student_info': student_info,
                     'info': info,
@@ -52,12 +53,10 @@ def register(request, uuid):
                 )
 
     if check_condition(u'registration-closed'):
-        return direct_to_template(
+        return shortcuts.render(
                 request,
-                template='nmadb-session-reg/closed.html',
-                extra_context={
-                    'info': info,
-                    },
+                'nmadb-session-reg/closed.html',
+                {'info': info},
                 )
 
     if request.method == 'POST':
@@ -109,5 +108,43 @@ def import_base(request):
                 'admin:app_list',
                 kwargs={'app_label': 'nmadb_session_reg'}),
             'app_label': _(u'NMADB Session Registration'),
+            'form': form,
+            }
+
+
+@admin.site.admin_view
+@render_to('admin/file-form.html')
+@transaction.commit_on_success
+def import_sections(request):
+    """ Imports sections and creates groups.
+    """
+    if request.method == 'POST':
+        form = ImportTitleOnlyForm(request.POST, request.FILES)
+        if form.is_valid():
+            counter = 0
+            for sheet in form.cleaned_data['spreadsheet']:
+                for row in sheet:
+                    section = Section()
+                    section.id = row[u'id']
+                    section.title = row[u'title']
+                    section.save()
+                    group = models.SessionGroup()
+                    group.id = row[u'id']
+                    group.title = row[u'title']
+                    group.save()
+                    counter += 1
+            msg = _(u'{0} sections successfully imported.').format(counter)
+            msg = _(u'{0} groups successfully created.').format(counter)
+            messages.success(request, msg)
+            return shortcuts.redirect(
+                    'admin:nmadb_registration_section_changelist')
+    else:
+        form = ImportTitleOnlyForm()
+    return {
+            'admin_index_url': urlresolvers.reverse('admin:index'),
+            'app_url': urlresolvers.reverse(
+                'admin:app_list',
+                kwargs={'app_label': 'nmadb_registration'}),
+            'app_label': _(u'NMADB Registration'),
             'form': form,
             }

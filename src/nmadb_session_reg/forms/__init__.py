@@ -13,6 +13,7 @@ from nmadb_session_reg import models
 from nmadb_registration.forms import ImportValidateRow
 from nmadb_registration.models import Section as SectionModel
 from nmadb_registration import forms as registration_forms
+from nmadb_session_reg.config import info
 
 
 def once(func):
@@ -24,27 +25,6 @@ def once(func):
             setattr(self, cached_value_name, func(self, *args, **kwargs))
         return getattr(self, cached_value_name)
     return wrapper
-
-
-class StudentInfoForm(forms.ModelForm):
-    """ Form for entering student info.
-    """
-
-    class Meta(object):
-        model = models.RegistrationInfo
-        exclude = (
-                # StudentInfo
-                'invitation',
-                'school_year',
-                'home_address',
-                'session_programs_ratings',
-                'commit_timestamp',
-                # RegistrationInfo
-                'payed',
-                'chosen',
-                'comment',
-                'assigned_session_program',
-                )
 
 
 class ParentInfoForm(forms.ModelForm):
@@ -69,39 +49,7 @@ class ParentInfoForm(forms.ModelForm):
         exclude = ('child',)
 
 
-def get_rating_choices():
-    """ Generates possible rating choices.
-    """
-    max_value = models.SessionProgram.objects.count() + 1
-    return tuple(zip(range(1, max_value), range(1, max_value)))
-
-class SessionProgramRatingForm(forms.ModelForm):
-    """ From for selecting program.
-    """
-
-    rating = forms.ChoiceField(
-            choices=lazy(get_rating_choices, tuple)(),
-            label=_(u'Rating'),
-            widget=forms.Select(
-                attrs={'class': 'program-rating'},
-                ),
-            required=True,
-            )
-
-    comment = forms.CharField(
-            label=_(u'Comment'),
-            widget=forms.Textarea(
-                attrs={'class': 'program-rating', 'rows': 3,},
-                ),
-            required=False,
-            )
-
-    class Meta(object):
-        model = models.SessionProgramRating
-        exclude = ('student', 'program',)
-
-
-class RegistrationFormSet(object):
+class RegistrationFormSetBase(object):
     """ Formset that encapsulates checking of all registration
     forms.
     """
@@ -113,21 +61,27 @@ class RegistrationFormSet(object):
         self.invitation = invitation
         self.errors = []
 
-    @once
-    def is_valid(self):
-        """ Checks if all forms are valid.
+    def _check_student_form(self):
+        """ Checks if student form is valid.
         """
-
-        valid = True
-
         if not self.student_form.is_valid():
             self.errors.append(_(u'Fix errors in the student form.'))
-            valid = False
+            return False
+        else:
+            return True
 
+    def _check_address_form(self):
+        """ Checks if address form is valid.
+        """
         if not self.address_form.is_valid():
             self.errors.append(_(u'Fix errors in the address form.'))
-            valid = False
+            return False
+        else:
+            return True
 
+    def _check_parent_forms(self):
+        """ Checks if parent forms are valid.
+        """
         self.parent_forms_valid = []
         parent_error_added = False
         for i, parent_form in enumerate(self.parent_forms):
@@ -148,22 +102,7 @@ class RegistrationFormSet(object):
         if not self.parent_forms_valid and not parent_error_added:
             self.errors.append(_(u'Fill parent forms.'))
             parent_error_added = True
-        valid = valid and not parent_error_added
-
-        ratings = set()
-        if self.rating_forms:
-            for rating_form in self.rating_forms:
-                if not rating_form.is_valid():
-                    valid = False
-                    self.errors.append(_(u'Fix errors in rating forms.'))
-                else:
-                    ratings.add(rating_form.cleaned_data['rating'])
-        if len(ratings) != len(self.rating_forms):
-            valid = False
-            self.errors.append(_(
-                u'Assign different values to different programs.'))
-
-        return valid
+        return not parent_error_added
 
     @property
     @once
@@ -222,6 +161,66 @@ class RegistrationFormSet(object):
                     for index in range(2)
                     ]
 
+    def save_student(self):
+        """ Saves student and associated forms.
+        """
+        today = datetime.date.today()
+
+        address = self.address_form.save()
+
+        student = self.student_form.save(commit=False)
+        student.invitation = self.invitation
+        student.school_year = today.year + int(today.month >= 9)
+        student.home_address = address
+        student.save()
+
+        self.base_info.generated_address = unicode(address)
+        self.base_info.save()
+
+    def save_parents(self):
+        """ Saves parent forms.
+        """
+
+        for parent_form in self.parent_forms_valid:
+            parent = parent_form.save(commit=False)
+            parent.child = student
+            parent.save()
+
+
+
+class RegistrationFormSetProgram(RegistrationFormSetBase):
+    """ Formset that encapsulates checking of all registration
+    forms.
+    """
+
+    def _check_rating_forms(self):
+        """ Checks if rating forms are valid.
+        """
+        valid = True
+        ratings = set()
+        if self.rating_forms:
+            for rating_form in self.rating_forms:
+                if not rating_form.is_valid():
+                    valid = False
+                    self.errors.append(_(u'Fix errors in rating forms.'))
+                else:
+                    ratings.add(rating_form.cleaned_data['rating'])
+        if len(ratings) != len(self.rating_forms):
+            valid = False
+            self.errors.append(_(
+                u'Assign different values to different programs.'))
+        return valid
+
+    @once
+    def is_valid(self):
+        """ Checks if all forms are valid.
+        """
+        return (
+                self._check_student_form() and
+                self._check_address_form() and
+                self._check_parent_forms() and
+                self._check_rating_forms())
+
     @property
     @once
     def rating_forms(self):
@@ -248,30 +247,46 @@ class RegistrationFormSet(object):
                     for rating in self.ratings
                     ]
 
-    def save(self):
-        """ Saves all forms.
+    def save_ratings(self):
+        """ Saves rating forms.
         """
-        today = datetime.date.today()
-
-        address = self.address_form.save()
-
-        student = self.student_form.save(commit=False)
-        student.invitation = self.invitation
-        student.school_year = today.year + int(today.month >= 9)
-        student.home_address = address
-        student.save()
-
-        self.base_info.generated_address = unicode(address)
-        self.base_info.save()
-
         for rating in self.ratings:
             rating.student = student
             rating.save()
 
-        for parent_form in self.parent_forms_valid:
-            parent = parent_form.save(commit=False)
-            parent.child = student
-            parent.save()
+    def save(self):
+        """ Saves all forms.
+        """
+        self.save_student()
+        self.save_ratings()
+        self.save_parents()
+
+
+class RegistrationFormSetSection(RegistrationFormSetBase):
+    """ Formset that encapsulates checking of all registration
+    forms.
+    """
+
+    @once
+    def is_valid(self):
+        """ Checks if all forms are valid.
+        """
+        return (
+                self._check_student_form() and
+                self._check_address_form() and
+                self._check_parent_forms())
+
+    def save(self):
+        """ Saves all forms.
+        """
+        self.save_student()
+        self.save_parents()
+
+
+if info.session_is_program_based:
+    RegistrationFormSet = RegistrationFormSetProgram
+else:
+    RegistrationFormSet = RegistrationFormSetSection
 
 
 IMPORT_BASE_INFO_REQUIRED_COLUMNS = {

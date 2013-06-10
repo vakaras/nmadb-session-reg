@@ -55,6 +55,17 @@ class SessionProgramAdmin(utils.ModelAdmin):
             )
 
 
+class SessionGroupAdmin(utils.ModelAdmin):
+    """ Administration for session group.
+    """
+
+    list_display = (
+            'id',
+            'title',
+            'description',
+            )
+
+
 class BaseInfoAdmin(utils.ModelAdmin, SendMailMixin):
     """ Administration for base info.
     """
@@ -103,12 +114,20 @@ class BaseInfoAdmin(utils.ModelAdmin, SendMailMixin):
             invitation.save()
             return [(base_info.email, {
                 'base_info': base_info,
-                'info': info,
+                'info': info.as_dict(),
                 'invitation': invitation,
                 'current_site': unicode(Site.objects.get_current()),
                 })]
+        def send_handler(to, from_email, context):
+            """ Handles mail sent event.
+            """
+            import datetime
+            invitation = context['invitation']
+            invitation.time_sent = datetime.datetime.now()
+            invitation.save()
         return mail.send_template_mail_admin_action(
                 create_context, True, request, queryset,
+                callback=send_handler,
                 action=u'send_invitations')
     send_invitations.short_description = _(u'send invitations')
 
@@ -122,7 +141,7 @@ class InvitationAdmin(utils.ModelAdmin):
             'base',
             'uuid',
             'payment',
-            'commit_timestamp',
+            'time_sent',
             )
 
     search_fields = (
@@ -178,8 +197,8 @@ class StudentInfoAdmin(utils.ModelAdmin):
     list_per_page = 20
 
 
-class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
-    """ Administration for registration info.
+class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
+    """ Administration for registration info base.
     """
 
     list_display = (
@@ -190,16 +209,7 @@ class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
             'school_class',
             'payed',
             'chosen',
-            'assigned_session_program',
             'section',
-            'first_selection',
-            'second_selection',
-            'third_selection',
-            )
-
-    list_filter = (
-            'school_class',
-            'assigned_session_program',
             )
 
     search_fields = (
@@ -217,7 +227,6 @@ class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
     list_editable = (
             'payed',
             'chosen',
-            'assigned_session_program',
             )
 
     actions = utils.ModelAdmin.actions + [
@@ -233,6 +242,45 @@ class RegistrationInfoAdmin(utils.ModelAdmin, SendMailMixin):
             )
 
     list_per_page = 20
+
+
+class RegistrationInfoSectionAdmin(RegistrationInfoAdminBase):
+    """ Administration for registration info.
+    """
+
+    list_display = RegistrationInfoAdminBase.list_display + (
+            'assigned_session_group',
+            )
+
+    list_filter = (
+            'school_class',
+            'assigned_session_group',
+            )
+
+    list_editable = RegistrationInfoAdminBase.list_editable + (
+            'assigned_session_group',
+            )
+
+
+class RegistrationInfoProgramAdmin(RegistrationInfoAdminBase):
+    """ Administration for registration info.
+    """
+
+    list_display = RegistrationInfoAdminBase.list_display + (
+            'assigned_session_program',
+            'first_selection',
+            'second_selection',
+            'third_selection',
+            )
+
+    list_filter = (
+            'school_class',
+            'assigned_session_program',
+            )
+
+    list_editable = RegistrationInfoAdminBase.list_editable + (
+            'assigned_session_program',
+            )
 
 
 class ParentInfoAdmin(utils.ModelAdmin):
@@ -258,15 +306,30 @@ class ParentInfoAdmin(utils.ModelAdmin):
             )
 
 
-actions.register(_(u'Import student base info'),
-    'nmadb-session-reg-import-base-info')
+actions.register(
+        'nmadb-session-reg-import-base-info',
+        _(u'Import student base info'),
+        'nmadb-session-reg-import-base-info')
 
 
-admin.site.register(models.SessionProgram, SessionProgramAdmin)
+if info.session_is_program_based:
+    admin.site.register(models.SessionProgram, SessionProgramAdmin)
+    admin.site.register(models.SessionProgramRating)
+    admin.site.register(
+            models.RegistrationInfo,
+            RegistrationInfoProgramAdmin)
+else:
+    actions.unregister('nmadb-registration-import-sections')
+    actions.register(
+            'nmadb-registration-import-sections',
+            _(u'Import sections and groups'),
+            'nmadb-registration-import-sections-and-groups')
+    admin.site.register(models.SessionGroup, SessionGroupAdmin)
+    admin.site.register(
+            models.RegistrationInfo,
+            RegistrationInfoSectionAdmin)
 admin.site.register(models.BaseInfo, BaseInfoAdmin)
 admin.site.register(models.StudentInfo, StudentInfoAdmin)
 admin.site.register(models.Invitation, InvitationAdmin)
-admin.site.register(models.RegistrationInfo, RegistrationInfoAdmin)
 admin.site.register(models.ParentInfo, ParentInfoAdmin)
-admin.site.register(models.SessionProgramRating)
 admin.site.register(models.Info)

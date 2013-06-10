@@ -3,32 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 
 from nmadb_registration import models as registration_models
+from nmadb_session_reg.config import info
 from django_db_utils import models as utils_models
-
-
-class SessionProgram(models.Model):
-    """ Program for student to select from.
-    """
-
-    title = models.CharField(
-            max_length=80,
-            verbose_name=_(u'title'),
-            unique=True,
-            )
-
-    description = models.TextField(
-            blank=True,
-            null=True,
-            verbose_name=_(u'description'),
-            )
-
-    class Meta(object):
-        ordering = [u'title']
-        verbose_name = _(u'session program')
-        verbose_name_plural = _(u'session programs')
-
-    def __unicode__(self):
-        return self.title
 
 
 class BaseInfo(models.Model):
@@ -110,6 +86,12 @@ class Invitation(models.Model):
             auto_now_add=True,
             )
 
+    time_sent = models.DateTimeField(
+            verbose_name=_(u'sent'),
+            blank=True,
+            null=True,
+            )
+
     class Meta(object):
         ordering = [u'base',]
         verbose_name = _(u'invitation')
@@ -180,12 +162,6 @@ class StudentInfo(models.Model):
             null=True,
             )
 
-    session_programs_ratings = models.ManyToManyField(
-            SessionProgram,
-            through='SessionProgramRating',
-            verbose_name=_(u'ratings of the session programs')
-            )
-
     commit_timestamp = models.DateTimeField(
             verbose_name=_(u'commit timestamp'),
             auto_now_add=True,
@@ -206,8 +182,8 @@ class StudentInfo(models.Model):
     section.short_description = _(u'section')
 
 
-class RegistrationInfo(StudentInfo):
-    """ Information entered by administrator.
+class RegistrationInfoMixin(models.Model):
+    """ Information entered by administrator mixin.
     """
 
     payed = models.BooleanField(
@@ -228,81 +204,33 @@ class RegistrationInfo(StudentInfo):
             null=True,
             )
 
-    assigned_session_program = models.ForeignKey(
-            SessionProgram,
-            verbose_name=_(u'assigned session program'),
-            blank=True,
-            null=True,
-            )
-
     class Meta(object):
-        ordering = [u'invitation',]
-        verbose_name = _(u'registration info')
-        verbose_name_plural = _(u'registration infos')
-
-    def __unicode__(self):
-        return u'<{0.id}> invitation: {0.invitation}'.format(self)
-
-    def selection(self, index):
-        """ Student selection with given index.
-        """
-        ratings = SessionProgramRating.objects.filter(
-                student=self).order_by('-rating')
-        try:
-            rating = ratings[index]
-        except IndexError:
-            return None
-        else:
-            return u'{0.id} {0.title} ({1})'.format(
-                    rating.program, rating.rating)
-
-    def first_selection(self):
-        """ Session program that student assigned a highest rating.
-        """
-        return self.selection(0)
-
-    def second_selection(self):
-        """ Session program that student assigned a second highest rating.
-        """
-        return self.selection(1)
-
-    def third_selection(self):
-        """ Session program that student assigned a third highest rating.
-        """
-        return self.selection(2)
+        abstract = True
 
 
-class SessionProgramRating(models.Model):
-    """ Student rating of the session program.
-    """
-
-    student = models.ForeignKey(
+if info.session_is_program_based:
+    from nmadb_session_reg.models.program_based import (
+            SessionProgram,
+            SessionProgramRating,
+            )
+    from nmadb_session_reg.models import program_based
+    class RegistrationInfo(
             StudentInfo,
-            verbose_name=_(u'student'),
+            RegistrationInfoMixin,
+            program_based.RegistrationInfoMixin):
+        """ Information entered by administrator.
+        """
+else:
+    from nmadb_session_reg.models.section_based import (
+            SessionGroup,
             )
-
-    program = models.ForeignKey(
-            SessionProgram,
-            verbose_name=_(u'program')
-            )
-
-    rating = models.PositiveSmallIntegerField(
-            verbose_name=_(u'rating'),
-            help_text=_(
-                u'The bigger the number, the more you want to '
-                u'participate in that program.'),
-            )
-
-    comment = models.TextField(
-            blank=True,
-            null=True,
-            verbose_name=_(u'Motivation'),
-            )
-
-    class Meta(object):
-        ordering = [u'student', u'program',]
-        verbose_name = u'session program rating'
-        verbose_name_plural = u'session program ratings'
+    from nmadb_session_reg.models import section_based
+    class RegistrationInfo(
+            StudentInfo,
+            RegistrationInfoMixin,
+            section_based.RegistrationInfoMixin):
+        """ Information entered by administrator.
+        """
 
 
 class ParentInfo(models.Model):
@@ -336,28 +264,8 @@ class ParentInfo(models.Model):
             verbose_name=_(u'last name'),
             )
 
-    job = models.CharField(
-            max_length=128,
-            blank=True,
-            verbose_name=_(u'job'),
-            )
-
-    job_phone_number = utils_models.PhoneNumberField(
-            verbose_name=_(u'job phone number'),
-            help_text=_(
-                u'Either enter a valid phone number or leave the field '
-                u'empty.'),
-            blank=True,
-            )
-
-    job_position = models.CharField(
-            max_length=128,
-            blank=True,
-            verbose_name=_(u'job position'),
-            )
-
     phone_number = utils_models.PhoneNumberField(
-            verbose_name=_(u'mobile phone number'),
+            verbose_name=_(u'phone number'),
             )
 
     email = models.EmailField(
@@ -378,8 +286,21 @@ class Info(models.Model):
     """ Session system information.
     """
 
+    SESSION_TYPE = (
+            (u'Wi', _(u'winter'),),
+            (u'Sp', _(u'spring'),),
+            (u'Su', _(u'summer'),),
+            (u'Au', _(u'autumn'),),
+            )
+
     year = models.PositiveSmallIntegerField(
             verbose_name=_(u'year'),
+            )
+
+    session_type = models.CharField(
+            max_length=3,
+            choices=SESSION_TYPE,
+            verbose_name=_(u'session type'),
             )
 
     session = models.CharField(
@@ -408,12 +329,11 @@ class Info(models.Model):
             verbose_name=_(u'confirmation deadline'),
             )
 
-    # TODO: Add normal session type:
-    # SESSION_TYPE = (
-            #(u'Wi', _(u'winter'),),
-            #(u'Sp', _(u'spring'),),
-            #(u'Su', _(u'summer'),),
-            #(u'Au', _(u'autumn'),),
-            #)
-    # TODO: Add also a marker if the session is section based or program
-    # based.
+    session_is_program_based = models.BooleanField(
+            verbose_name=_(u'session is program based'),
+            editable=False,
+            )
+
+    root_page_redirect_address = models.URLField(
+            verbose_name=_(u'root page redirect address'),
+            )
