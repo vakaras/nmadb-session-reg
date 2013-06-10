@@ -84,6 +84,8 @@ class RegistrationFormSetBase(object):
         """
         self.parent_forms_valid = []
         parent_error_added = False
+        email_given = False
+        phone_given = False
         for i, parent_form in enumerate(self.parent_forms):
             if self.POST.get(
                     parent_form['relation'].html_name, u'') != u'N':
@@ -93,12 +95,24 @@ class RegistrationFormSetBase(object):
                             u'Fix errors in parent forms.'))
                         parent_error_added = True
                 else:
+                    if parent_form.cleaned_data['phone_number']:
+                        phone_given = True
+                    if parent_form.cleaned_data['email']:
+                        email_given = True
                     self.parent_forms_valid.append(parent_form)
             else:
                 self.parent_forms[i] = ParentInfoForm(
                         prefix=u'parent_info_{0}'.format(i),
                         initial={'relation': u'N'},
                         )
+        if not phone_given:
+            self.errors.append(
+                    _(u'Please give at least one parent phone number.'))
+            parent_error_added = True
+        if not email_given:
+            self.errors.append(
+                    _(u'Please give at least one parent email address.'))
+            parent_error_added = True
         if not self.parent_forms_valid and not parent_error_added:
             self.errors.append(_(u'Fill parent forms.'))
             parent_error_added = True
@@ -285,7 +299,14 @@ class RegistrationFormSetSection(RegistrationFormSetBase):
 
 if info.session_is_program_based:
     RegistrationFormSet = RegistrationFormSetProgram
+    from nmadb_session_reg.forms.program_based import (
+        StudentInfoForm,
+        SessionProgramRatingForm,
+        )
 else:
+    from nmadb_session_reg.forms.section_based import (
+        StudentInfoForm,
+        )
     RegistrationFormSet = RegistrationFormSetSection
 
 

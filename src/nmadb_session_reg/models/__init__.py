@@ -266,11 +266,15 @@ class ParentInfo(models.Model):
 
     phone_number = utils_models.PhoneNumberField(
             verbose_name=_(u'phone number'),
+            blank=True,
+            null=True,
             )
 
     email = models.EmailField(
             max_length=128,
             verbose_name=_(u'email address'),
+            blank=True,
+            null=True,
             )
 
     class Meta(object):
