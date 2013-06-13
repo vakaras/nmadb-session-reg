@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>NMA {{ info.session }} sesijos registracijos sąrašai</title>
+    <style type="text/css">
+      @page {
+        size: {{ pagesize }} landscape;
+        margin: 1cm;
+        @frame footer {
+          -pdf-frame-content: footerContent;
+          bottom: 0cm;
+          margin-left: 9cm;
+          margin-right: 9cm;
+          height: 1cm;
+        }
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.r }});
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.b }});
+        font-weight: bold;
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.i }});
+        font-style: italic, oblique;
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.bi }});
+        font-weight: bold;
+        font-style: italic, oblique;
+      }
+      body {
+        font-family: ubuntu ;
+      }
+      div.header {
+        font-size: 20px;
+      }
+      div.header td {
+        text-align: center;
+      }
+      .group-title {
+        font-weight: bold;
+      }
+      img {
+        /*height: 50%;*/
+      }
+    </style>
+  </head>
+  <body>
+    {% for title, group in groups.items %}
+    <div class="header">
+      <table>
+        <tr>
+          <td width="200px">
+            <img width="150px" height="70px"
+                 src="{{ logo_path }}" alt="NMA logotipas" />
+          </td>
+          <td>
+            <span class="group-title">{{ title }}</span><br />
+            {{ info.session }} sesijos dalyvių registracijos sąrašas
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <p>title: {{ title }}</p>
+    {% for students in group %}
+    <p>Page groups:</p>
+    <ul>
+      {% for student in students %}
+      <li>{{ student.first_name }}</li>
+      {% endfor %}
+    </ul>
+    <pdf:nextpage />
+    {% endfor %}
+    {% endfor %}
+    <div>
+      {%block page_foot%}
+      <!--Page <pdf:pagenumber>-->
+      {%endblock%}
+    </div>
+  </body>
+</html>

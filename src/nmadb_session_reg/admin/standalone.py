@@ -6,8 +6,10 @@ from django.contrib.sites.models import Site
 from nmadb_session_reg import models
 from nmadb_utils import admin as utils
 from nmadb_utils import actions
+from nmadb_utils.pdf import render_to_pdf
 from nmadb_automation import mail
 from nmadb_session_reg.config import info
+from django.conf import settings
 
 
 class SendMailMixin(object):
@@ -233,6 +235,7 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
             'send_mail',
             'send_sync_template_mail',
             'send_async_template_mail',
+            'download_registration_sheet',
             ]
 
     raw_id_fields = (
@@ -242,6 +245,52 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
             )
 
     list_per_page = 20
+
+
+    def download_registration_sheet(self, request, queryset):
+        """ Download registration sheet as pdf.
+        """
+        from collections import defaultdict
+        groups = defaultdict(list)
+        if not info.session_is_program_based:
+            def add(student):
+                if student.assigned_session_group:
+                    title = student.assigned_session_group.title
+                else:
+                    title = _(u'Unknown')
+                groups[title].append(student)
+
+        else:
+            raise NotImplemented
+        for student in queryset:
+            add(student)
+        sorted_groups = {}
+        for title, group in sorted(groups.items()):
+            students = sorted(
+                    group,
+                    key=lambda x: (x.last_name, x.first_name))
+            length = len(students)
+            div = 14
+            if length > div:
+                while 0 < (length % div) < 3:
+                    div -= 1
+            sgroup = []
+            for i in range(0, length, div):
+                sgroup.append(group[i:i+div])
+            sorted_groups[title] = sgroup
+        return render_to_pdf(
+                'nmadb-session-reg/registration-sheet.html',
+                    {
+                        'info': info,
+                        'logo_path': settings.NMA_LOGO_IMAGE,
+                        'font_path': settings.UBUNTU_FONT,
+                        'pagesize':'A4',
+                        'students': queryset,
+                        'groups': sorted_groups,
+                    }
+                )
+    download_registration_sheet.short_description = _(
+            u'download registration sheet as pdf')
 
 
 class RegistrationInfoSectionAdmin(RegistrationInfoAdminBase):
@@ -255,6 +304,8 @@ class RegistrationInfoSectionAdmin(RegistrationInfoAdminBase):
     list_filter = (
             'school_class',
             'assigned_session_group',
+            'payed',
+            'chosen',
             )
 
     list_editable = RegistrationInfoAdminBase.list_editable + (
