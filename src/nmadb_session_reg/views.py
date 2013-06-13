@@ -29,6 +29,7 @@ def register(request, uuid):
         pass
     else:
         if check_condition(u'send-confirmation-mail'):
+            assert False
             registration_info = student_info.registrationinfo
             template = automation_models.Email.objects.get(id=3)
             assert u'pasirinkimai' in template.subject

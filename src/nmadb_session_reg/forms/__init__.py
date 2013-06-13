@@ -182,11 +182,19 @@ class RegistrationFormSetBase(object):
 
         address = self.address_form.save()
 
-        student = self.student_form.save(commit=False)
-        student.invitation = self.invitation
-        student.school_year = today.year + int(today.month >= 9)
-        student.home_address = address
-        student.save()
+        self.student = self.student_form.save(commit=False)
+        self.student.invitation = self.invitation
+        self.student.school_year = today.year + int(today.month >= 9)
+        self.student.home_address = address
+        if not info.session_is_program_based:
+            from nmadb_session_reg.models import SessionGroup
+            try:
+                session_group = SessionGroup.objects.get(
+                        title=self.base_info.section.title)
+                self.student.assigned_session_group = session_group
+            except SessionGroup.DoesNotExist:
+                pass
+        self.student.save()
 
         self.base_info.generated_address = unicode(address)
         self.base_info.save()
@@ -197,7 +205,7 @@ class RegistrationFormSetBase(object):
 
         for parent_form in self.parent_forms_valid:
             parent = parent_form.save(commit=False)
-            parent.child = student
+            parent.child = self.student
             parent.save()
 
 
