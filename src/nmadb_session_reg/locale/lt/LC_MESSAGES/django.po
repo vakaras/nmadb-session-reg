@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-19 21:43+0000\n"
-"PO-Revision-Date: 2013-02-19 23:55+0300\n"
+"POT-Creation-Date: 2013-06-14 16:24+0000\n"
+"PO-Revision-Date: 2013-06-14 19:34+0300\n"
 "Last-Translator: Vytautas Astrauskas <vastrauskas@gmail.com>\n"
 "Language-Team: FIXME\n"
 "Language: lt\n"
@@ -17,384 +17,518 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Virtaal 0.7.0\n"
 
-#: forms.py:56
-#, fuzzy
-msgid "Relation"
-msgstr "Ryšys"
-
-#: forms.py:58
-msgid "If there is only one of the parents, then please fill information only about him and in other form choose “none”"
-msgstr "Jei yra tik vienas iš tėvų, užpildykite informaciją tik apie jį, o kitoje formoje pasirinkite „nėra“."
-
-#: forms.py:84
-#, fuzzy
-msgid "Rating"
-msgstr "Įvertinimas"
-
-#: forms.py:92
-#, fuzzy
-msgid "Comment"
-msgstr "Komentaras"
-
-#: forms.py:124
-msgid "Fix errors in the student form."
-msgstr "Ištaisykite klaidas mokinio formoje."
-
-#: forms.py:128
-msgid "Fix errors in the address form."
-msgstr "Ištaisykite klaidas adreso formoje."
-
-#: forms.py:139
-msgid "Fix errors in parent forms."
-msgstr "Ištaisykite klaidas tėvų formose."
-
-#: forms.py:149
-#, fuzzy
-msgid "Fill parent forms."
-msgstr "Užpildykite tėvų formas."
-
-#: forms.py:158
-msgid "Fix errors in rating forms."
-msgstr "Ištaisykite klaidas įvertinimo formose."
-
-#: forms.py:164
-msgid "Assign different values to different programs."
-msgstr "Priskirkite skirtingas reikšmes skirtingoms programoms."
-
-#: forms.py:278
-msgid "First name"
-msgstr "Vardas"
-
-#: forms.py:279
-msgid "Last name"
-msgstr "Pavardė"
-
-#: forms.py:280
-msgid "Email"
-msgstr "El. pašto adresas"
-
-#: forms.py:281
-msgid "Section title"
-msgstr "Sekcijos pavadinimas"
-
-#: forms.py:282
-msgid "Payment"
-msgstr "Mokestis"
-
-#: forms.py:309
-msgid "Payment cannot be negative!"
-msgstr "Mokestis negali būti neigiamas!"
-
-#: forms.py:316
-msgid "Unknown section “{0}”."
-msgstr "Nežinoma sekcija „{0}“."
-
-#: forms.py:345
-msgid "Base info"
-msgstr "Bazinė informacija"
-
-#: forms.py:353
-msgid "Spreadsheet document"
-msgstr "Skaičiuoklės dokumentas"
-
-#: forms.py:356
-msgid "Please select spreadsheet file. Required columns are: {0}."
-msgstr "Pasirinkite skaičiuoklės dokumento failą. Būtini stulpeliai yra: {0}."
-
-#: forms.py:359
-msgid "“{0}”"
-msgstr "„{0}“"
-
-#: models.py:15
-msgid "title"
-msgstr "pavadinimas"
-
-#: models.py:22
-msgid "description"
-msgstr "aprašymas"
-
-#: models.py:27
-msgid "session program"
-msgstr "sesijos programa"
-
-#: models.py:28
-msgid "session programs"
-msgstr "sesijos programos"
-
-#: models.py:39
-#: models.py:133
-#: models.py:298
-msgid "first name"
-msgstr "vardas"
-
-#: models.py:43
-#: models.py:137
-#: models.py:302
-msgid "last name"
-msgstr "pavardė"
-
-#: models.py:48
-#: models.py:142
-#: models.py:331
-msgid "email address"
-msgstr "el. pašto adresas"
-
-#: models.py:58
-msgid "section"
-msgstr "sekcija"
-
-#: models.py:62
-#: models.py:220
-msgid "comment"
-msgstr "komentaras"
-
-#: models.py:68
-#: models.py:105
-msgid "participant's payment"
-msgstr "dalyvio mokestis"
-
-#: models.py:78
-#: models.py:109
-#: models.py:190
-msgid "commit timestamp"
-msgstr "įrašymo laikas"
-
-#: models.py:84
-#: models.py:98
-msgid "base info"
-msgstr "bazinė informacija"
-
-#: models.py:85
-msgid "base infos"
-msgstr "bazinės informacijos"
-
-#: models.py:102
-msgid "invitation identifier"
-msgstr "kvietimo identifikatorius"
-
-#: models.py:115
-#: models.py:129
-msgid "invitation"
-msgstr "kvietimas"
-
-#: models.py:116
-msgid "invitations"
-msgstr "kvietimai"
-
-#: models.py:146
-msgid "personal phone number"
-msgstr "asmeninis telefono numeris"
-
-#: models.py:154
-msgid "class"
-msgstr "klasė"
-
-#: models.py:162
-msgid "class update year"
-msgstr "klasės atnaujinimo metai"
-
-#: models.py:164
-msgid "This field value shows, at which year January 3 day student was in school_class."
-msgstr "Ši reikšmė nurodo kurių metu sausio 3 dieną mokinys buvo klasėje school_class."
-
-#: models.py:171
-msgid "school"
-msgstr "mokykla"
-
-#: models.py:176
-msgid "home address"
-msgstr "namų adresas"
-
-#: models.py:178
-msgid "Null only if base_info.generated_address is present."
-msgstr "Null tik tuo atveju, jei base_info.generated_address yra nurodytas."
-
-#: models.py:186
-msgid "ratings of the session programs"
-msgstr "sesijų programų įvertinimai"
-
-#: models.py:196
-msgid "student info"
-msgstr "mokinio informacija"
-
-#: models.py:197
-msgid "student infos"
-msgstr "mokinių informacijos"
-
-#: models.py:208
-msgid "payed"
-msgstr "sumokėta"
-
-#: models.py:210
-msgid "True, if pupil have payed registration fee."
-msgstr "Taip, jei mokinys sumokėjo registracijos mokestį."
-
-#: models.py:214
-msgid "chosen"
-msgstr "priimtas"
-
-#: models.py:215
-msgid "Student was chosen."
-msgstr "Mokinys buvo priimtas."
-
-#: models.py:227
-msgid "assigned session program"
-msgstr "priskirta sesijos programa"
-
-#: models.py:234
-msgid "registration info"
-msgstr "registracijos informacija"
-
-#: models.py:235
-msgid "registration infos"
-msgstr "registracijų informacijos"
-
-#: models.py:247
-msgid "student"
-msgstr "mokinys"
-
-#: models.py:252
-msgid "program"
-msgstr "programa"
-
-#: models.py:256
-msgid "rating"
-msgstr "įvertinimas"
-
-#: models.py:258
-msgid "The bigger the number, the more you want to participate in that program."
-msgstr "Didesnis skaičius reiškia didesnį norą dalyvauti programoje."
-
-#: models.py:265
-msgid "Motivation"
-msgstr "Motivacija"
-
-#: models.py:279
-msgid "mother"
-msgstr "mama"
-
-#: models.py:280
-msgid "father"
-msgstr "tėtis"
-
-#: models.py:281
-msgid "tutoress"
-msgstr "globėja"
-
-#: models.py:282
-msgid "tutor"
-msgstr "globėjas"
-
-#: models.py:283
-msgid "none"
-msgstr "nėra"
-
-#: models.py:288
-msgid "child"
-msgstr "vaikas"
-
-#: models.py:294
-msgid "relation"
-msgstr "ryšys"
-
-#: models.py:308
-msgid "job"
-msgstr "darbas"
-
-#: models.py:312
-msgid "job phone number"
-msgstr "darbo telefono numeris"
-
-#: models.py:314
-msgid "Either enter a valid phone number or leave the field empty."
-msgstr "Įveskite korektišką telefono numerį arba palikite laukelį tuščią."
-
-#: models.py:322
-msgid "job position"
-msgstr "pareigos"
-
-#: models.py:326
-msgid "mobile phone number"
-msgstr "mobiliojo telefono numeris"
-
-#: models.py:336
-msgid "parent info"
-msgstr "tėvo informacija"
-
-#: models.py:337
-msgid "parent infos"
-msgstr "tėvų informacijos"
-
-#: models.py:348
-msgid "year"
-msgstr "metai"
-
-#: models.py:353
-msgid "session"
-msgstr "sesija"
-
-#: models.py:358
-msgid "manager name dative"
-msgstr "vadovo vardas naudininko linksnyje"
-
-#: models.py:362
-msgid "manager email"
-msgstr "vadovo el. pašto adresas"
-
-#: models.py:366
-msgid "manager phone"
-msgstr "vadovo telefono numeris"
-
-#: models.py:370
-msgid "administrator email"
-msgstr "administratoriaus el. pašto adresas"
-
-#: models.py:374
-msgid "confirmation deadline"
-msgstr "patvirtinimo terminas"
-
-#: views.py:83
+#: views.py:99
 msgid "{0} base infos about students successfully imported."
 msgstr "{0} dalyvių bazinių informacijų buvo sėkmingai importuota."
 
-#: views.py:95
+#: views.py:111
 msgid "NMADB Session Registration"
 msgstr "NMADB sesijos registracijos"
 
-#: admin/module.py:98
-msgid "Ignored: {0.first_name} {0.last_name}"
-msgstr "Praleista: {0.first_name} {0.last_name}"
+#: views.py:137
+#, fuzzy
+msgid "{0} sections successfully imported."
+msgstr "{0} sekcijų buvo sėkmingai importuota."
 
-#: admin/module.py:139
+#: views.py:138
+#, fuzzy
+msgid "{0} groups successfully created."
+msgstr "{0} grupių buvo sėkmingai sukurta."
+
+#: views.py:149
+#, fuzzy
+msgid "NMADB Registration"
+msgstr "NMADB Registracija"
+
+#: admin/module.py:63
+msgid "Updated ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“ → „{3}“"
+msgstr "Atnaujinta ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“ → „{3}“"
+
+#: admin/module.py:73
+#, fuzzy
+msgid "Created ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“"
+msgstr "Sukurta ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“"
+
+#: admin/module.py:95
 msgid "Error: {0.first_name} {0.last_name}"
 msgstr "Klaida: {0.first_name} {0.last_name}"
 
-#: admin/module.py:149
+#: admin/module.py:111
 msgid "No address: {0.first_name} {0.last_name}"
 msgstr "Nėra adreso: {0.first_name} {0.last_name}"
 
-#: admin/module.py:166
+#: admin/module.py:132
 msgid "{0.id} {0.first_name} {0.last_name} (birth date: {0.birth_date}) already exists in database, but creating a new one as {1.id} {1.first_name} {1.last_name} parent."
 msgstr "{0.id} {0.first_name} {0.last_name} (gimimo data: {0.birth_date}) jau yra duomenų bazėje, bet pridedamas dar vienas įrašas kaip {1.id} {1.first_name} {1.last_name} tėvas."
 
-#: admin/standalone.py:67
+#: admin/module.py:158
+#, fuzzy
+msgid "Added parent: {0.id} {0.first_name} {0.last_name} (child: {1.id} {1.first_name} {1.last_name})"
+msgstr "Pridėtas tėvas: {0.id} {0.first_name} {0.last_name} (vaikas: {1.id} {1.first_name} {1.last_name})"
+
+#: admin/module.py:264
+#: admin/module.py:333
+msgid "Ignored: {0.first_name} {0.last_name}"
+msgstr "Praleista: {0.first_name} {0.last_name}"
+
+#: admin/module.py:314
+msgid "Created group: {0.id} {0.session} {0.comment}"
+msgstr "Sukurta grupė: {0.id} {0.session} {0.comment}"
+
+#: admin/module.py:358
+msgid "Created participation ({0.id} {0.first_name} {0.last_name}) {1} and added to {2.id} {2.comment}"
+msgstr "Sukurtas dalyvavimo įrašas ({0.id} {0.first_name} {0.last_name}) {1} ir pridėtas į {2.id} {2.comment}"
+
+#: admin/module.py:369
+msgid "Selected {0} entries."
+msgstr "Pasirinkti {0} įrašai."
+
+#: admin/module.py:400
+msgid "Update NMADB info with collected data."
+msgstr "Atnaujinti NMADB informaciją su surinkta medžiaga."
+
+#: admin/module.py:414
+msgid "Create participation entries."
+msgstr "Sukurti dalyvavimo įrašus."
+
+#: admin/standalone.py:26
 msgid "send email"
 msgstr "siųsti laišką"
 
-#: admin/standalone.py:76
+#: admin/standalone.py:36
 msgid "send template mail synchronously"
 msgstr "siųsti šabloninį laišką sinchroniškai"
 
-#: admin/standalone.py:86
+#: admin/standalone.py:46
 msgid "send template mail asynchronously"
 msgstr "siųsti šabloninį laišką asinchroniškai"
 
-#: admin/standalone.py:108
+#: admin/standalone.py:134
 #, fuzzy
 msgid "send invitations"
 msgstr "siųsti kvietimus"
 
-#: admin/standalone.py:227
+#: admin/standalone.py:261
+msgid "Unknown"
+msgstr "Nežinoma"
+
+#: admin/standalone.py:303
+msgid "download registration sheet as pdf"
+msgstr "atsisiųsti registracijos sąrašus pdf formatu"
+
+#: admin/standalone.py:315
+msgid "download lecturer sheet as pdf"
+msgstr "atsisiųsti sąrašus dėstytojui pdf formatu"
+
+#: admin/standalone.py:384
 msgid "Import student base info"
 msgstr "Importuoti mokinių bazinę informaciją"
 
+#: admin/standalone.py:398
+msgid "Import sections and groups"
+msgstr "Importuoti sekcijas ir grupes"
+
+#: forms/__init__.py:36
+#, fuzzy
+msgid "Relation"
+msgstr "Ryšys"
+
+#: forms/__init__.py:38
+msgid "If there is only one of the parents, then please fill information only about him and in other form choose “none”"
+msgstr "Jei yra tik vienas iš tėvų, užpildykite informaciją tik apie jį, o kitoje formoje pasirinkite „nėra“."
+
+#: forms/__init__.py:68
+msgid "Fix errors in the student form."
+msgstr "Ištaisykite klaidas mokinio formoje."
+
+#: forms/__init__.py:77
+msgid "Fix errors in the address form."
+msgstr "Ištaisykite klaidas adreso formoje."
+
+#: forms/__init__.py:95
+msgid "Fix errors in parent forms."
+msgstr "Ištaisykite klaidas tėvų formose."
+
+#: forms/__init__.py:110
+msgid "Please give at least one parent phone number."
+msgstr "Įveskite bent vieno iš tėvų telefono numerį."
+
+#: forms/__init__.py:114
+msgid "Please give at least one parent email address."
+msgstr "Įveskite bent vieno iš tėvų elektroninio pašto adresą."
+
+#: forms/__init__.py:117
+#, fuzzy
+msgid "Fill parent forms."
+msgstr "Užpildykite tėvų formas."
+
+#: forms/__init__.py:227
+msgid "Fix errors in rating forms."
+msgstr "Ištaisykite klaidas įvertinimo formose."
+
+#: forms/__init__.py:233
+msgid "Assign different values to different programs."
+msgstr "Priskirkite skirtingas reikšmes skirtingoms programoms."
+
+#: forms/__init__.py:322
+msgid "First name"
+msgstr "Vardas"
+
+#: forms/__init__.py:323
+msgid "Last name"
+msgstr "Pavardė"
+
+#: forms/__init__.py:324
+msgid "Email"
+msgstr "El. pašto adresas"
+
+#: forms/__init__.py:325
+msgid "Section title"
+msgstr "Sekcijos pavadinimas"
+
+#: forms/__init__.py:326
+msgid "Payment"
+msgstr "Mokestis"
+
+#: forms/__init__.py:353
+msgid "Payment cannot be negative!"
+msgstr "Mokestis negali būti neigiamas!"
+
+#: forms/__init__.py:360
+msgid "Unknown section “{0}”."
+msgstr "Nežinoma sekcija „{0}“."
+
+#: forms/__init__.py:389
+msgid "Base info"
+msgstr "Bazinė informacija"
+
+#: forms/__init__.py:397
+msgid "Spreadsheet document"
+msgstr "Skaičiuoklės dokumentas"
+
+#: forms/__init__.py:400
+msgid "Please select spreadsheet file. Required columns are: {0}."
+msgstr "Pasirinkite skaičiuoklės dokumento failą. Būtini stulpeliai yra: {0}."
+
+#: forms/__init__.py:403
+msgid "“{0}”"
+msgstr "„{0}“"
+
+#: forms/program_based.py:40
+#, fuzzy
+msgid "Rating"
+msgstr "Įvertinimas"
+
+#: forms/program_based.py:48
+#, fuzzy
+msgid "Comment"
+msgstr "Komentaras"
+
+#: models/__init__.py:15
+#: models/__init__.py:115
+#: models/__init__.py:260
+msgid "first name"
+msgstr "vardas"
+
+#: models/__init__.py:19
+#: models/__init__.py:119
+#: models/__init__.py:264
+msgid "last name"
+msgstr "pavardė"
+
+#: models/__init__.py:24
+#: models/__init__.py:124
+#: models/__init__.py:275
+msgid "email address"
+msgstr "el. pašto adresas"
+
+#: models/__init__.py:34
+#: models/__init__.py:182
+msgid "section"
+msgstr "sekcija"
+
+#: models/__init__.py:38
+#: models/__init__.py:202
+#: models/section_based.py:18
+msgid "comment"
+msgstr "komentaras"
+
+#: models/__init__.py:44
+#: models/__init__.py:81
+msgid "participant's payment"
+msgstr "dalyvio mokestis"
+
+#: models/__init__.py:54
+#: models/__init__.py:85
+#: models/__init__.py:166
+msgid "commit timestamp"
+msgstr "įrašymo laikas"
+
+#: models/__init__.py:60
+#: models/__init__.py:74
+msgid "base info"
+msgstr "bazinė informacija"
+
+#: models/__init__.py:61
+msgid "base infos"
+msgstr "bazinės informacijos"
+
+#: models/__init__.py:78
+msgid "invitation identifier"
+msgstr "kvietimo identifikatorius"
+
+#: models/__init__.py:90
+msgid "sent"
+msgstr "išsiųsta"
+
+#: models/__init__.py:97
+#: models/__init__.py:111
+msgid "invitation"
+msgstr "kvietimas"
+
+#: models/__init__.py:98
+msgid "invitations"
+msgstr "kvietimai"
+
+#: models/__init__.py:128
+msgid "personal phone number"
+msgstr "asmeninis telefono numeris"
+
+#: models/__init__.py:136
+msgid "class"
+msgstr "klasė"
+
+#: models/__init__.py:144
+msgid "class update year"
+msgstr "klasės atnaujinimo metai"
+
+#: models/__init__.py:146
+msgid "This field value shows, at which year January 3 day student was in school_class."
+msgstr "Ši reikšmė nurodo kurių metu sausio 3 dieną mokinys buvo klasėje school_class."
+
+#: models/__init__.py:153
+msgid "school"
+msgstr "mokykla"
+
+#: models/__init__.py:158
+msgid "home address"
+msgstr "namų adresas"
+
+#: models/__init__.py:160
+msgid "Null only if base_info.generated_address is present."
+msgstr "Null tik tuo atveju, jei base_info.generated_address yra nurodytas."
+
+#: models/__init__.py:172
+msgid "student info"
+msgstr "mokinio informacija"
+
+#: models/__init__.py:173
+msgid "student infos"
+msgstr "mokinių informacijos"
+
+#: models/__init__.py:190
+msgid "payed"
+msgstr "sumokėta"
+
+#: models/__init__.py:192
+msgid "True, if pupil have payed registration fee."
+msgstr "Taip, jei mokinys sumokėjo registracijos mokestį."
+
+#: models/__init__.py:196
+msgid "chosen"
+msgstr "priimtas"
+
+#: models/__init__.py:197
+msgid "Student was chosen."
+msgstr "Mokinys buvo priimtas."
+
+#: models/__init__.py:241
+msgid "mother"
+msgstr "mama"
+
+#: models/__init__.py:242
+msgid "father"
+msgstr "tėtis"
+
+#: models/__init__.py:243
+msgid "tutoress"
+msgstr "globėja"
+
+#: models/__init__.py:244
+msgid "tutor"
+msgstr "globėjas"
+
+#: models/__init__.py:245
+msgid "none"
+msgstr "nėra"
+
+#: models/__init__.py:250
+msgid "child"
+msgstr "vaikas"
+
+#: models/__init__.py:256
+msgid "relation"
+msgstr "ryšys"
+
+#: models/__init__.py:268
+#, fuzzy
+msgid "phone number"
+msgstr "telefono numeris"
+
+#: models/__init__.py:282
+msgid "parent info"
+msgstr "tėvo informacija"
+
+#: models/__init__.py:283
+msgid "parent infos"
+msgstr "tėvų informacijos"
+
+#: models/__init__.py:294
+msgid "winter"
+msgstr "žiema"
+
+#: models/__init__.py:295
+msgid "spring"
+msgstr "pavasaris"
+
+#: models/__init__.py:296
+msgid "summer"
+msgstr "vasara"
+
+#: models/__init__.py:297
+msgid "autumn"
+msgstr "ruduo"
+
+#: models/__init__.py:301
+msgid "year"
+msgstr "metai"
+
+#: models/__init__.py:307
+#, fuzzy
+msgid "session type"
+msgstr "sesijos tipas"
+
+#: models/__init__.py:312
+msgid "session"
+msgstr "sesija"
+
+#: models/__init__.py:317
+msgid "manager name dative"
+msgstr "vadovo vardas naudininko linksnyje"
+
+#: models/__init__.py:321
+msgid "manager email"
+msgstr "vadovo el. pašto adresas"
+
+#: models/__init__.py:325
+msgid "manager phone"
+msgstr "vadovo telefono numeris"
+
+#: models/__init__.py:329
+msgid "administrator email"
+msgstr "administratoriaus el. pašto adresas"
+
+#: models/__init__.py:333
+msgid "confirmation deadline"
+msgstr "patvirtinimo terminas"
+
+#: models/__init__.py:337
+#, fuzzy
+msgid "session is program based"
+msgstr "sesija yra paremta programomis"
+
+#: models/__init__.py:342
+msgid "root page redirect address"
+msgstr "kokiu adresu nukreipti iš pagrindinio puslapio"
+
+#: models/program_based.py:13
+#: models/section_based.py:11
+msgid "title"
+msgstr "pavadinimas"
+
+#: models/program_based.py:20
+msgid "description"
+msgstr "aprašymas"
+
+#: models/program_based.py:27
+msgid "ratings of the session programs"
+msgstr "sesijų programų įvertinimai"
+
+#: models/program_based.py:32
+msgid "session program"
+msgstr "sesijos programa"
+
+#: models/program_based.py:33
+msgid "session programs"
+msgstr "sesijos programos"
+
+#: models/program_based.py:46
+msgid "assigned session program"
+msgstr "priskirta sesijos programa"
+
+#: models/program_based.py:53
+#, fuzzy
+msgid "registration info (program)"
+msgstr "registracijos informacija (programa)"
+
+#: models/program_based.py:54
+#, fuzzy
+msgid "registration infos (program)"
+msgstr "registracijų informacijos (programa)"
+
+#: models/program_based.py:94
+msgid "student"
+msgstr "mokinys"
+
+#: models/program_based.py:99
+msgid "program"
+msgstr "programa"
+
+#: models/program_based.py:103
+msgid "rating"
+msgstr "įvertinimas"
+
+#: models/program_based.py:105
+msgid "The bigger the number, the more you want to participate in that program."
+msgstr "Didesnis skaičius reiškia didesnį norą dalyvauti programoje."
+
+#: models/program_based.py:112
+msgid "Motivation"
+msgstr "Motivacija"
+
+#: models/section_based.py:23
+#, fuzzy
+msgid "session group"
+msgstr "sesijos grupė"
+
+#: models/section_based.py:24
+#, fuzzy
+msgid "session groups"
+msgstr "sesijų grupės"
+
+#: models/section_based.py:38
+#, fuzzy
+msgid "assigned session group"
+msgstr "priskirta sesijos grupė"
+
+#: models/section_based.py:46
+#, fuzzy
+msgid "registration info (section)"
+msgstr "registracijų informacijos (sekcija)"
+
+#: models/section_based.py:47
+#, fuzzy
+msgid "registration infos (section)"
+msgstr "registracijų informacijos (sekcija)"
+
+#~ msgid "job"
+#~ msgstr "darbas"
+
+#~ msgid "Either enter a valid phone number or leave the field empty."
+#~ msgstr "Įveskite korektišką telefono numerį arba palikite laukelį tuščią."
+
+#~ msgid "job position"
+#~ msgstr "pareigos"
+
+#~ msgid "mobile phone number"
+#~ msgstr "mobiliojo telefono numeris"
