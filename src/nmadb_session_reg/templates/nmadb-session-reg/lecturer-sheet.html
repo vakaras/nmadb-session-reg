@@ -8,14 +8,6 @@
 .data-name {
   width: 220px;
 }
-.data-phone {
-  width: 120px;
-  text-align: center;
-  vertical-align: middle;
-}
-.data-email {
-  width: 250px;
-}
 .data-school {
   width: 300px;
 }
@@ -23,19 +15,17 @@
   width: 40px;
   text-align: center;
 }
-.data-signature {
-  width: 100px;
+.data-comments {
+  width: 470px;
 }
 {% endblock %}
 
 {% block header-td %}
 <th class="data-number">Eil. nr.</th>
 <th class="data-name">Vardas, pavardė</th>
-<th class="data-phone">Telefono numeris</th>
-<th class="data-email">El. pašto adresas</th>
 <th class="data-school">Mokykla</th>
 <th class="data-class">Klasė</th>
-<th class="data-signature">Parašas</th>
+<th class="data-comments">Pastabos</th>
 {% endblock %}
 
 {% block content-td %}
@@ -44,11 +34,9 @@
   {{ student.first_name }}
   {{ student.last_name }}
 </td>
-<td class="data-phone">{{ student.phone_number }}</td>
-<td class="data-email">{{ student.email }}</td>
 <td class="data-school">{{ student.school.title }}</td>
 <td class="data-class">{{ student.school_class }}</td>
-<td class="data-signature">
+<td class="data-comments">
   &nbsp;<br />&nbsp; <!-- hack to set min-heigh -->
 </td>
 {% endblock %}

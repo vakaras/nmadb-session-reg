@@ -236,6 +236,7 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
             'send_sync_template_mail',
             'send_async_template_mail',
             'download_registration_sheet',
+            'download_lecturer_sheet',
             ]
 
     raw_id_fields = (
@@ -247,7 +248,7 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
     list_per_page = 20
 
 
-    def download_registration_sheet(self, request, queryset):
+    def download_sheet(self, request, queryset, default_div, template):
         """ Download registration sheet as pdf.
         """
         from collections import defaultdict
@@ -270,7 +271,7 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
                     group,
                     key=lambda x: (x.last_name, x.first_name))))
             length = len(students)
-            div = 14
+            div = default_div
             if length > div:
                 while 0 < (length % div) < 3:
                     div -= 1
@@ -279,18 +280,39 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
                 sgroup.append(students[i:i+div])
             sorted_groups[title] = sgroup
         return render_to_pdf(
+                template,
+                {
+                    'info': info,
+                    'logo_path': settings.NMA_LOGO_IMAGE,
+                    'font_path': settings.UBUNTU_FONT,
+                    'pagesize':'A4',
+                    'students': queryset,
+                    'groups': sorted_groups,
+                })
+
+    def download_registration_sheet(self, request, queryset):
+        """ Download registration sheet as pdf.
+        """
+        return self.download_sheet(
+                request,
+                queryset,
+                14,
                 'nmadb-session-reg/registration-sheet.html',
-                    {
-                        'info': info,
-                        'logo_path': settings.NMA_LOGO_IMAGE,
-                        'font_path': settings.UBUNTU_FONT,
-                        'pagesize':'A4',
-                        'students': queryset,
-                        'groups': sorted_groups,
-                    }
                 )
     download_registration_sheet.short_description = _(
             u'download registration sheet as pdf')
+
+    def download_lecturer_sheet(self, request, queryset):
+        """ Download sheet for lecturer as pdf.
+        """
+        return self.download_sheet(
+                request,
+                queryset,
+                14,
+                'nmadb-session-reg/lecturer-sheet.html',
+                )
+    download_lecturer_sheet.short_description = _(
+            u'download lecturer sheet as pdf')
 
 
 class RegistrationInfoSectionAdmin(RegistrationInfoAdminBase):

@@ -1,0 +1,123 @@
+{% comment %} vim: ft=htmldjango
+{% endcomment %}
+{# FIXME: Internationalize. #}
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>NMA {{ info.session }} sesijos registracijos sąrašai</title>
+    <style type="text/css">
+      {% block page-settings %}
+      @page {
+        size: {{ pagesize }} landscape;
+        margin: 1cm;
+        @frame footer {
+          -pdf-frame-content: footerContent;
+          bottom: 0cm;
+          margin-left: 9cm;
+          margin-right: 9cm;
+          height: 1cm;
+        }
+      }
+      {% endblock %}
+      {% block font-settings %}
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.r }});
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.b }});
+        font-weight: bold;
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.i }});
+        font-style: italic, oblique;
+      }
+      @font-face {
+        font-family: ubuntu;
+        src: url({{ font_path.bi }});
+        font-weight: bold;
+        font-style: italic, oblique;
+      }
+      {% endblock %}
+      body {
+        font-family: ubuntu ;
+      }
+      div.header table {
+        font-size: 32px;
+      }
+      div.header td {
+        text-align: center;
+      }
+      .group-title {
+        font-weight: bold;
+      }
+      img {
+        /*height: 50%;*/
+      }
+      {% block css-td %}
+      {% endblock %}
+      table.content {
+        font-size: 16px;
+        border: 1px solid black;
+      }
+      table.content th {
+        padding-top: 3px;
+        background-color: #ccffcc;
+      }
+      table.content tr {
+        height: 80px;
+      }
+      table.content td {
+        height: 80px;
+        padding-top: 3px;
+        padding-left: 3px;
+        padding-right: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    {% for title, group in groups.items %}
+    {% for students in group %}
+    {% block header %}
+    <div class="header">
+      <table>
+        <tr>
+          <td width="200px">
+            <img width="180px" height="84px"
+                 src="{{ logo_path }}" alt="NMA logotipas" />
+          </td>
+          <td>
+            <span class="group-title">{{ title }}</span><br />
+            {{ info.session }} sesijos dalyvių registracijos sąrašas
+          </td>
+        </tr>
+      </table>
+    </div>
+    {% endblock %}
+    <table class="content">
+      <tr>
+        {% block header-td %}
+        {% endblock %}
+      </tr>
+      {% for number, student in students %}
+      <tr>
+        {% block content-td %}
+        {% endblock %}
+      </tr>
+      {% empty %}
+      <tr><td>Įvyko klaida</td></tr>
+      {% endfor %}
+    </table>
+    <pdf:nextpage />
+    {% endfor %}
+    {% endfor %}
+    <div>
+      {%block page_foot%}
+      <!--Page <pdf:pagenumber>-->
+      {%endblock%}
+    </div>
+  </body>
+</html>
