@@ -266,9 +266,9 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
             add(student)
         sorted_groups = {}
         for title, group in sorted(groups.items()):
-            students = sorted(
+            students = list(enumerate(sorted(
                     group,
-                    key=lambda x: (x.last_name, x.first_name))
+                    key=lambda x: (x.last_name, x.first_name))))
             length = len(students)
             div = 14
             if length > div:
@@ -276,7 +276,7 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
                     div -= 1
             sgroup = []
             for i in range(0, length, div):
-                sgroup.append(group[i:i+div])
+                sgroup.append(students[i:i+div])
             sorted_groups[title] = sgroup
         return render_to_pdf(
                 'nmadb-session-reg/registration-sheet.html',

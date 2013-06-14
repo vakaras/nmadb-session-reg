@@ -38,8 +38,8 @@
       body {
         font-family: ubuntu ;
       }
-      div.header {
-        font-size: 20px;
+      div.header table {
+        font-size: 32px;
       }
       div.header td {
         text-align: center;
@@ -50,15 +50,58 @@
       img {
         /*height: 50%;*/
       }
+      .data-number {
+        width: 20px;
+        text-align: center;
+      }
+      .data-name {
+        width: 220px;
+      }
+      .data-phone {
+        width: 120px;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .data-email {
+        width: 250px;
+      }
+      .data-school {
+        width: 300px;
+      }
+      .data-class {
+        width: 40px;
+        text-align: center;
+      }
+      .data-signature {
+        width: 100px;
+      }
+      table.content {
+        font-size: 16px;
+        border: 1px solid black;
+      }
+      table.content th {
+        padding-top: 3px;
+        background-color: #ccffcc;
+      }
+      table.content tr {
+        height: 80px;
+      }
+      table.content td {
+        height: 80px;
+        padding-top: 3px;
+        padding-left: 3px;
+        padding-right: 3px;
+      }
     </style>
   </head>
   <body>
     {% for title, group in groups.items %}
+    {% for students in group %}
     <div class="header">
       <table>
         <tr>
           <td width="200px">
-            <img width="150px" height="70px"
+            <img width="180px" height="84px"
                  src="{{ logo_path }}" alt="NMA logotipas" />
           </td>
           <td>
@@ -68,15 +111,35 @@
         </tr>
       </table>
     </div>
-
-    <p>title: {{ title }}</p>
-    {% for students in group %}
-    <p>Page groups:</p>
-    <ul>
-      {% for student in students %}
-      <li>{{ student.first_name }}</li>
+    <table class="content">
+      <tr>
+        <th class="data-number">Eil. nr.</th>
+        <th class="data-name">Vardas, pavardė</th>
+        <th class="data-phone">Telefono numeris</th>
+        <th class="data-email">El. pašto adresas</th>
+        <th class="data-school">Mokykla</th>
+        <th class="data-class">Klasė</th>
+        <th class="data-signature">Parašas</th>
+      </tr>
+      {% for number, student in students %}
+      <tr>
+        <td class="data-number">{{ number|add:"1" }}</td>
+        <td class="data-name">
+          {{ student.first_name }}
+          {{ student.last_name }}
+        </td>
+        <td class="data-phone">{{ student.phone_number }}</td>
+        <td class="data-email">{{ student.email }}</td>
+        <td class="data-school">{{ student.school.title }}</td>
+        <td class="data-class">{{ student.school_class }}</td>
+        <td class="data-signature">
+          &nbsp;<br />&nbsp; <!-- hack to set min-heigh -->
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td>Įvyko klaida</td></tr>
       {% endfor %}
-    </ul>
+    </table>
     <pdf:nextpage />
     {% endfor %}
     {% endfor %}
