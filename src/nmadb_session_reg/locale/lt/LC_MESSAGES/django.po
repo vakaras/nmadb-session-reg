@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-06-14 16:24+0000\n"
-"PO-Revision-Date: 2013-06-14 19:34+0300\n"
+"PO-Revision-Date: 2013-06-15 19:18+0300\n"
 "Last-Translator: Vytautas Astrauskas <vastrauskas@gmail.com>\n"
 "Language-Team: FIXME\n"
 "Language: lt\n"
@@ -26,17 +26,14 @@ msgid "NMADB Session Registration"
 msgstr "NMADB sesijos registracijos"
 
 #: views.py:137
-#, fuzzy
 msgid "{0} sections successfully imported."
 msgstr "{0} sekcijų buvo sėkmingai importuota."
 
 #: views.py:138
-#, fuzzy
 msgid "{0} groups successfully created."
 msgstr "{0} grupių buvo sėkmingai sukurta."
 
 #: views.py:149
-#, fuzzy
 msgid "NMADB Registration"
 msgstr "NMADB Registracija"
 
@@ -45,7 +42,6 @@ msgid "Updated ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“ → „{3}�
 msgstr "Atnaujinta ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“ → „{3}“"
 
 #: admin/module.py:73
-#, fuzzy
 msgid "Created ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“"
 msgstr "Sukurta ({0.id} {0.first_name} {0.last_name}) {1}: „{2}“"
 
@@ -62,7 +58,6 @@ msgid "{0.id} {0.first_name} {0.last_name} (birth date: {0.birth_date}) already 
 msgstr "{0.id} {0.first_name} {0.last_name} (gimimo data: {0.birth_date}) jau yra duomenų bazėje, bet pridedamas dar vienas įrašas kaip {1.id} {1.first_name} {1.last_name} tėvas."
 
 #: admin/module.py:158
-#, fuzzy
 msgid "Added parent: {0.id} {0.first_name} {0.last_name} (child: {1.id} {1.first_name} {1.last_name})"
 msgstr "Pridėtas tėvas: {0.id} {0.first_name} {0.last_name} (vaikas: {1.id} {1.first_name} {1.last_name})"
 
@@ -104,7 +99,6 @@ msgid "send template mail asynchronously"
 msgstr "siųsti šabloninį laišką asinchroniškai"
 
 #: admin/standalone.py:134
-#, fuzzy
 msgid "send invitations"
 msgstr "siųsti kvietimus"
 
@@ -129,7 +123,6 @@ msgid "Import sections and groups"
 msgstr "Importuoti sekcijas ir grupes"
 
 #: forms/__init__.py:36
-#, fuzzy
 msgid "Relation"
 msgstr "Ryšys"
 
@@ -158,7 +151,6 @@ msgid "Please give at least one parent email address."
 msgstr "Įveskite bent vieno iš tėvų elektroninio pašto adresą."
 
 #: forms/__init__.py:117
-#, fuzzy
 msgid "Fill parent forms."
 msgstr "Užpildykite tėvų formas."
 
@@ -215,12 +207,10 @@ msgid "“{0}”"
 msgstr "„{0}“"
 
 #: forms/program_based.py:40
-#, fuzzy
 msgid "Rating"
 msgstr "Įvertinimas"
 
 #: forms/program_based.py:48
-#, fuzzy
 msgid "Comment"
 msgstr "Komentaras"
 
@@ -371,7 +361,6 @@ msgid "relation"
 msgstr "ryšys"
 
 #: models/__init__.py:268
-#, fuzzy
 msgid "phone number"
 msgstr "telefono numeris"
 
@@ -404,7 +393,6 @@ msgid "year"
 msgstr "metai"
 
 #: models/__init__.py:307
-#, fuzzy
 msgid "session type"
 msgstr "sesijos tipas"
 
@@ -433,7 +421,6 @@ msgid "confirmation deadline"
 msgstr "patvirtinimo terminas"
 
 #: models/__init__.py:337
-#, fuzzy
 msgid "session is program based"
 msgstr "sesija yra paremta programomis"
 
@@ -467,12 +454,10 @@ msgid "assigned session program"
 msgstr "priskirta sesijos programa"
 
 #: models/program_based.py:53
-#, fuzzy
 msgid "registration info (program)"
 msgstr "registracijos informacija (programa)"
 
 #: models/program_based.py:54
-#, fuzzy
 msgid "registration infos (program)"
 msgstr "registracijų informacijos (programa)"
 
@@ -497,27 +482,22 @@ msgid "Motivation"
 msgstr "Motivacija"
 
 #: models/section_based.py:23
-#, fuzzy
 msgid "session group"
 msgstr "sesijos grupė"
 
 #: models/section_based.py:24
-#, fuzzy
 msgid "session groups"
 msgstr "sesijų grupės"
 
 #: models/section_based.py:38
-#, fuzzy
 msgid "assigned session group"
 msgstr "priskirta sesijos grupė"
 
 #: models/section_based.py:46
-#, fuzzy
 msgid "registration info (section)"
 msgstr "registracijų informacijos (sekcija)"
 
 #: models/section_based.py:47
-#, fuzzy
 msgid "registration infos (section)"
 msgstr "registracijų informacijos (sekcija)"
 
