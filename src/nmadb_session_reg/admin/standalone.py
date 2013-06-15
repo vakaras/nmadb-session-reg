@@ -125,7 +125,8 @@ class BaseInfoAdmin(utils.ModelAdmin, SendMailMixin):
             """ Handles mail sent event.
             """
             from django.utils import timezone
-            invitation = models.Invitation.objects.get(
+            from nmadb_session_reg.models import Invitation
+            invitation = Invitation.objects.get(
                     id=context['invitation_id'])
             invitation.time_sent = timezone.now()
             invitation.save()
