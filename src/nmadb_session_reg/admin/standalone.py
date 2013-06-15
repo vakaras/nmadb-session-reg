@@ -146,6 +146,7 @@ class InvitationAdmin(utils.ModelAdmin):
             'base',
             'uuid',
             'payment',
+            'commit_timestamp',
             'time_sent',
             )
 
