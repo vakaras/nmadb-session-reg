@@ -118,14 +118,17 @@ class BaseInfoAdmin(utils.ModelAdmin, SendMailMixin):
                 'base_info': base_info,
                 'info': info.as_dict(),
                 'invitation': invitation,
+                'invitation_id': invitation.id,
                 'current_site': unicode(Site.objects.get_current()),
                 })]
         def send_handler(to, from_email, context):
             """ Handles mail sent event.
             """
-            import datetime
-            invitation = context['invitation']
-            invitation.time_sent = datetime.datetime.now()
+            from django.utils import timezone
+            from nmadb_session_reg.models import Invitation
+            invitation = Invitation.objects.get(
+                    id=context['invitation_id'])
+            invitation.time_sent = timezone.now()
             invitation.save()
         return mail.send_template_mail_admin_action(
                 create_context, True, request, queryset,
@@ -143,6 +146,7 @@ class InvitationAdmin(utils.ModelAdmin):
             'base',
             'uuid',
             'payment',
+            'commit_timestamp',
             'time_sent',
             )
 
