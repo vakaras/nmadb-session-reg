@@ -20,7 +20,9 @@ class SendMailMixin(object):
         """ Allows to send email.
         """
         return mail.send_mail_admin_action(
-                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                lambda obj: [
+                    (obj.email, {'obj': obj, 'info': info.as_dict()})
+                    ],
                 request,
                 queryset)
     send_mail.short_description = _(u'send email')
@@ -30,7 +32,9 @@ class SendMailMixin(object):
         """ Sends template email synchronously.
         """
         return mail.send_template_mail_admin_action(
-                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                lambda obj: [
+                    (obj.email, {'obj': obj, 'info': info.as_dict()})
+                    ],
                 False, request, queryset)
     send_sync_template_mail.short_description = _(
             u'send template mail synchronously')
@@ -40,7 +44,9 @@ class SendMailMixin(object):
         """ Sends template email asynchronously.
         """
         return mail.send_template_mail_admin_action(
-                lambda obj: [(obj.email, {'obj': obj, 'info': info})],
+                lambda obj: [
+                    (obj.email, {'obj': obj, 'info': info.as_dict()})
+                    ],
                 True, request, queryset)
     send_async_template_mail.short_description = _(
             u'send template mail asynchronously')
@@ -286,7 +292,7 @@ class RegistrationInfoAdminBase(utils.ModelAdmin, SendMailMixin):
         return render_to_pdf(
                 template,
                 {
-                    'info': info,
+                    'info': info.as_dict(),
                     'logo_path': settings.NMA_LOGO_IMAGE,
                     'font_path': settings.UBUNTU_FONT,
                     'pagesize':'A4',
