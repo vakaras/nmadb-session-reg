@@ -437,6 +437,6 @@ class ParentInfoAdmin(utils.ModelAdmin):
             )
 
 
-admin.site.register(models.BaseInfo, BaseInfoAdmin)
-admin.site.register(models.RegistrationInfo, RegistrationInfoAdmin)
-admin.site.register(models.ParentInfo, ParentInfoAdmin)
+#admin.site.register(models.BaseInfo, BaseInfoAdmin)
+#admin.site.register(models.RegistrationInfo, RegistrationInfoAdmin)
+#admin.site.register(models.ParentInfo, ParentInfoAdmin)
