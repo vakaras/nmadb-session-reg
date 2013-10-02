@@ -40,6 +40,8 @@ class HumanUpdater(object):
     def update_email(self, address):
         """ If the email does not exist, then adds.
         """
+        if not address:
+            return
         try:
             contacts.Email.objects.get(address=address)
         except contacts.Email.DoesNotExist:
@@ -208,13 +210,13 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             'school_class',
             'payed',
             'chosen',
-            'assigned_session_program',
+            #'assigned_session_program',
             'section',
             )
 
     list_filter = (
             'school_class',
-            'assigned_session_program',
+            #'assigned_session_program',
             'payed',
             'chosen',
             )
@@ -239,7 +241,8 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
 
     actions = utils.ModelAdmin.actions + [
             'update',
-            'create',
+            'create_program_based',
+            'create_section_based',
             'show_message',
             ]
 
@@ -291,10 +294,85 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
         section = academics.Section.objects.get(title__iexact=title)
         return section
 
-    def _create_session_participation_entries(
+    # TODO: Merge these methods by using Method Template design pattern.
+
+    def _create_session_participation_entries_section_based(
             self, request, registration_infos, session):
         """ Creates participation entries.
         """
+        assert not info.session_is_program_based
+        def generate_key(session_group):
+            """ Generates key for session group.
+            """
+            return u'{0.id} - {0.title}'.format(session_group)
+        groups = {}
+        for session_group in models.SessionGroup.objects.all():
+            key = generate_key(session_group)
+            try:
+                group = sessions.Group.objects.get(comment=key)
+            except sessions.Group.DoesNotExist:
+                group = sessions.Group()
+                group.session = session
+                group.comment = key
+                group.save()
+                self.message_user(
+                        request,
+                        _(u'Created group: {0.id} {0.session} {0.comment}'
+                            ).format(group))
+            groups[key] = group
+
+        for registration_info in registration_infos:
+            #if not registration_info.chosen:
+                #continue
+            invitation = registration_info.invitation
+            base_info = invitation.base
+            payment = invitation.payment
+            try:
+                student = students.Student.objects.distinct().get(
+                        email__address__iexact=base_info.email,
+                        first_name=base_info.first_name,
+                        last_name=base_info.last_name,
+                        )
+            except students.Student.DoesNotExist:
+                self.message_user(
+                        request,
+                        _(u'Ignored: {0.first_name} {0.last_name}').format(
+                            base_info))
+            else:
+                section = self._get_section(base_info.section)
+                print registration_info
+                academic = student.academic_set.get(section=section)
+                try:
+                    participation = (
+                            sessions.AcademicParticipation.objects.get(
+                                academic = academic,
+                                session = session,
+                                ))
+                except sessions.AcademicParticipation.DoesNotExist:
+                    participation = sessions.AcademicParticipation()
+                    participation.academic = academic
+                    participation.session = session
+                    participation.payment = payment
+                    participation.save()
+                    key = generate_key(
+                            registration_info.assigned_session_group)
+                    group = groups[key]
+                    group.academics.add(participation)
+                    self.message_user(
+                            request,
+                            _(
+                                u'Created participation '
+                                u'({0.id} {0.first_name} {0.last_name}) '
+                                u'{1} '
+                                u'and added to {2.id} {2.comment}'
+                                ).format(student, session, group))
+
+
+    def _create_session_participation_entries_program_based(
+            self, request, registration_infos, session):
+        """ Creates participation entries.
+        """
+        assert info.session_is_program_based
         def generate_key(program):
             """ Generates key for session program.
             """
@@ -376,6 +454,8 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
         if info.session.endswith(u'pavasario'):
             # Assuming that session type is program based.
             session_type = u'Sp'
+        elif info.session.endswith(u'vasaros'):
+            session_type = u'Su'
         else:
             raise Exception(u'Uknown session type')
 
@@ -400,18 +480,32 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             u'Update NMADB info with collected data.')
 
     @transaction.commit_on_success
-    def create(self, request, queryset):
+    def create_program_based(self, request, queryset):
         """ Creates participation entries.
         """
         session = self._get_session()
 
-        self._create_session_participation_entries(
+        self._create_session_participation_entries_program_based(
                 request,
                 queryset,
                 #models.RegistrationInfo.objects.all(),
                 session)
-    create.short_description = _(
-            u'Create participation entries.')
+    create_program_based.short_description = _(
+            u'Create program based participation entries.')
+
+    @transaction.commit_on_success
+    def create_section_based(self, request, queryset):
+        """ Creates participation entries.
+        """
+        session = self._get_session()
+
+        self._create_session_participation_entries_section_based(
+                request,
+                queryset,
+                #models.RegistrationInfo.objects.all(),
+                session)
+    create_section_based.short_description = _(
+            u'Create section based participation entries.')
 
 
 class ParentInfoAdmin(utils.ModelAdmin):
@@ -437,6 +531,6 @@ class ParentInfoAdmin(utils.ModelAdmin):
             )
 
 
-#admin.site.register(models.BaseInfo, BaseInfoAdmin)
-#admin.site.register(models.RegistrationInfo, RegistrationInfoAdmin)
-#admin.site.register(models.ParentInfo, ParentInfoAdmin)
+admin.site.register(models.BaseInfo, BaseInfoAdmin)
+admin.site.register(models.RegistrationInfo, RegistrationInfoAdmin)
+admin.site.register(models.ParentInfo, ParentInfoAdmin)
