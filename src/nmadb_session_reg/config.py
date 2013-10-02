@@ -6,7 +6,7 @@ class Info(object):
     """
 
     def __init__(self):
-        self.session_is_program_based = False
+        self.session_is_program_based = True
         self._info_object = None
 
     def as_dict(self):

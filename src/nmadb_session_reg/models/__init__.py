@@ -220,6 +220,14 @@ if info.session_is_program_based:
             program_based.RegistrationInfoMixin):
         """ Information entered by administrator.
         """
+
+        # Quick and dirty hack.
+        assigned_session_program = models.ForeignKey(
+                SessionProgram,
+                verbose_name=_(u'assigned session program'),
+                blank=True,
+                null=True,
+                )
 else:
     from nmadb_session_reg.models.section_based import (
             SessionGroup,

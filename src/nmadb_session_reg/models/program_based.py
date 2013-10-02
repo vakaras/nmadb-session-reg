@@ -31,6 +31,7 @@ class SessionProgram(models.Model):
         ordering = [u'title']
         verbose_name = _(u'session program')
         verbose_name_plural = _(u'session programs')
+        app_label = 'nmadb_session_reg'
 
     def __unicode__(self):
         return self.title
@@ -41,17 +42,18 @@ class RegistrationInfoMixin:
     based.
     """
 
-    assigned_session_program = models.ForeignKey(
-            SessionProgram,
-            verbose_name=_(u'assigned session program'),
-            blank=True,
-            null=True,
-            )
+    #assigned_session_program = models.ForeignKey(
+            #SessionProgram,
+            #verbose_name=_(u'assigned session program'),
+            #blank=True,
+            #null=True,
+            #)
 
     class Meta(object):
         ordering = [u'invitation',]
         verbose_name = _(u'registration info (program)')
         verbose_name_plural = _(u'registration infos (program)')
+        app_label = 'nmadb_session_reg'
 
     def __unicode__(self):
         return u'<{0.id}> invitation: {0.invitation}'.format(self)
@@ -116,3 +118,4 @@ class SessionProgramRating(models.Model):
         ordering = [u'student', u'program',]
         verbose_name = u'session program rating'
         verbose_name_plural = u'session program ratings'
+        app_label = 'nmadb_session_reg'
