@@ -190,12 +190,14 @@ class RegistrationInfoMixin(models.Model):
             verbose_name=_(u'payed'),
             blank=True,
             help_text=_(u'True, if pupil have payed registration fee.'),
+            default=False,
             )
 
     chosen = models.BooleanField(
             verbose_name=_(u'chosen'),
             help_text=_(u'Student was chosen.'),
             blank=True,
+            default=False,
             )
 
     comment = models.TextField(
@@ -344,6 +346,7 @@ class Info(models.Model):
     session_is_program_based = models.BooleanField(
             verbose_name=_(u'session is program based'),
             editable=False,
+            default=False,
             )
 
     root_page_redirect_address = models.URLField(
