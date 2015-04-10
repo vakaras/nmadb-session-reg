@@ -458,6 +458,11 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
             session_type = u'Sp'
         elif info.session.endswith(u'vasaros'):
             session_type = u'Su'
+        elif info.session.endswith(u'rudens'):
+            # Assuming that session type is program based.
+            session_type = u'Au'
+        elif info.session.endswith(u'\u017eiemos'):
+            session_type = u'Wi'
         else:
             raise Exception(u'Uknown session type')
 
