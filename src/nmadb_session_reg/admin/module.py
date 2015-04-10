@@ -27,6 +27,8 @@ class HumanUpdater(object):
     def update_phone(self, phone_number):
         """ If the phone number does not exist, then adds.
         """
+        if not phone_number:
+            return
         try:
             contacts.Phone.objects.get(number=phone_number)
         except contacts.Phone.DoesNotExist:
