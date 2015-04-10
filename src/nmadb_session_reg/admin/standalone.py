@@ -137,7 +137,7 @@ class BaseInfoAdmin(utils.ModelAdmin, SendMailMixin):
             invitation.time_sent = timezone.now()
             invitation.save()
         return mail.send_template_mail_admin_action(
-                create_context, True, request, queryset,
+                create_context, False, request, queryset,
                 callback=send_handler,
                 action=u'send_invitations')
     send_invitations.short_description = _(u'send invitations')
