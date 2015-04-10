@@ -472,7 +472,7 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
                 )
         return session
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def update(self, request, queryset):
         """ Copies to nmadb_session.
         """
@@ -486,7 +486,7 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
     update.short_description = _(
             u'Update NMADB info with collected data.')
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def create_program_based(self, request, queryset):
         """ Creates participation entries.
         """
@@ -500,7 +500,7 @@ class RegistrationInfoAdmin(utils.ModelAdmin):
     create_program_based.short_description = _(
             u'Create program based participation entries.')
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def create_section_based(self, request, queryset):
         """ Creates participation entries.
         """
