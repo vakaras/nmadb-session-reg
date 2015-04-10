@@ -31,12 +31,13 @@ class SessionProgram(models.Model):
         ordering = [u'title']
         verbose_name = _(u'session program')
         verbose_name_plural = _(u'session programs')
+        app_label = 'nmadb_session_reg'
 
     def __unicode__(self):
         return self.title
 
 
-class RegistrationInfoMixin:
+class RegistrationInfoMixin(models.Model):
     """ Information entered by administrator. Session is program
     based.
     """
@@ -49,9 +50,11 @@ class RegistrationInfoMixin:
             )
 
     class Meta(object):
+        abstract = True
         ordering = [u'invitation',]
         verbose_name = _(u'registration info (program)')
         verbose_name_plural = _(u'registration infos (program)')
+        app_label = 'nmadb_session_reg'
 
     def __unicode__(self):
         return u'<{0.id}> invitation: {0.invitation}'.format(self)
@@ -116,3 +119,4 @@ class SessionProgramRating(models.Model):
         ordering = [u'student', u'program',]
         verbose_name = u'session program rating'
         verbose_name_plural = u'session program ratings'
+        app_label = 'nmadb_session_reg'
