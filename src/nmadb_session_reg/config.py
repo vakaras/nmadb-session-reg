@@ -29,10 +29,9 @@ class Info(object):
         """ Gets or crates the info object.
         """
         from nmadb_session_reg.models import Info
+        from django.db.utils import OperationalError
 
-        try:
-            info = Info.objects.all()[0]
-        except IndexError:
+        def create_info():
             import datetime
             info = Info()
             info.year = 2013
@@ -44,10 +43,16 @@ class Info(object):
             info.admin_email = u'atranka@nmakademija.lt'
             info.confirmation_deadline = datetime.date(2013, 7, 3)
             info.session_is_program_based = self.session_is_program_based
-            info.save()
-        finally:
-            del Info
             return info
+
+        try:
+            info = Info.objects.all()[0]
+        except IndexError:
+            info = create_info()
+            info.save()
+        except OperationalError:
+            info = create_info()
+        return info
 
 
 info = Info()

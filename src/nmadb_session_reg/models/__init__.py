@@ -190,12 +190,14 @@ class RegistrationInfoMixin(models.Model):
             verbose_name=_(u'payed'),
             blank=True,
             help_text=_(u'True, if pupil have payed registration fee.'),
+            default=False,
             )
 
     chosen = models.BooleanField(
             verbose_name=_(u'chosen'),
             help_text=_(u'Student was chosen.'),
             blank=True,
+            default=False,
             )
 
     comment = models.TextField(
@@ -220,6 +222,14 @@ if info.session_is_program_based:
             program_based.RegistrationInfoMixin):
         """ Information entered by administrator.
         """
+
+        # Quick and dirty hack.
+        assigned_session_program = models.ForeignKey(
+                SessionProgram,
+                verbose_name=_(u'assigned session program'),
+                blank=True,
+                null=True,
+                )
 else:
     from nmadb_session_reg.models.section_based import (
             SessionGroup,
@@ -336,6 +346,7 @@ class Info(models.Model):
     session_is_program_based = models.BooleanField(
             verbose_name=_(u'session is program based'),
             editable=False,
+            default=False,
             )
 
     root_page_redirect_address = models.URLField(

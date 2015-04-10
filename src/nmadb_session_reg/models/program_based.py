@@ -42,12 +42,12 @@ class RegistrationInfoMixin(models.Model):
     based.
     """
 
-    assigned_session_program = models.ForeignKey(
-            SessionProgram,
-            verbose_name=_(u'assigned session program'),
-            blank=True,
-            null=True,
-            )
+    #assigned_session_program = models.ForeignKey(
+            #SessionProgram,
+            #verbose_name=_(u'assigned session program'),
+            #blank=True,
+            #null=True,
+            #)
 
     class Meta(object):
         abstract = True

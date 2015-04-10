@@ -16,7 +16,7 @@ from nmadb_automation import models as automation_models
 
 
 @render_to('nmadb-session-reg/registration.html')
-@transaction.commit_on_success
+@transaction.atomic
 def register(request, uuid):
     """ Student registration view for session.
     """
@@ -78,7 +78,7 @@ def register(request, uuid):
 
 @admin.site.admin_view
 @render_to('admin/file-form.html')
-@transaction.commit_on_success
+@transaction.atomic
 def import_base(request):
     """ Imports base info.
     """
@@ -115,7 +115,7 @@ def import_base(request):
 
 @admin.site.admin_view
 @render_to('admin/file-form.html')
-@transaction.commit_on_success
+@transaction.atomic
 def import_sections(request):
     """ Imports sections and creates groups.
     """
