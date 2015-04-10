@@ -1,6 +1,7 @@
 REGISTRATION_MODULES = (
         'nmadb_session_reg',
         'nmadb_registration',
+        'nmadb_entrance',
         )
 DATABASE_NAME = 'session-reg'
 
